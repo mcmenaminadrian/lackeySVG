@@ -32,7 +32,7 @@ class FirstPassHandler extends DefaultHandler {
 			
 		switch (qName) {
 	
-			case 'lackeyxml':
+			case 'lackeyml':
 			break;
 				
 			case 'application':
