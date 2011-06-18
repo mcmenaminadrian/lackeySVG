@@ -38,15 +38,13 @@ class SecondPassHandler extends DefaultHandler {
 		writer = new FileWriter(oFile)
 		svg = new MarkupBuilder(writer)
 		
+		min = fPH.minHeapAddr
+		max = fPH.maxHeapAddr
 		if (inst) {
-			min = (fPH.minInstructionAddr < fPH.minHeapAddr)?
-				fPH.minInstructionAddr:fPH.minHeapAddr
-			max = (fPH.maxInstructionAddr > fPH.maxHeapAddr)?
-				fPH.maxInstructionAddr:fPH.maxHeapAddr
-		}
-		else {
-			min = fPH.minHeapAddr
-			max = fPH.maxHeapAddr
+			if (fPH.minInstructionAddr < fPH.minHeapAddr)
+				min = fPH.minInstructionAddr
+			if (fPH.maxInstructionAddr > fPH.maxHeapAddr)
+				max = fPH.maxInstructionAddr
 		}
 		def memRange = max - min
 		
@@ -68,25 +66,26 @@ class SecondPassHandler extends DefaultHandler {
 		
 		if (verb) println "Drawing axes"
 		svg.line(x1:0, y1:0, x2:width, y2:0,
-			style:'stroke:RGB(0,0,0);stroke-width:2'){}
+			style:'stroke:RGB(50,50,50);stroke-width:1'){}
 		svg.line(x1:0, y1:0, x2:0, y2:height,
-			style:'stroke:RGB(0,0,0);stroke-width:2'){}
+			style:'stroke:RGB(50,50,50);stroke-width:1'){}
 	}
 	
 	void endDocument()
 	{
-		println "Mapping complete, now drawing points"
-		if (instr) {
+		if (verb) println "Mapping complete, now drawing points"
+		if (inst) {
 			instMap.each{k, v ->
 				svg.rect(x:k[0], y:k[1], width:1, height:1,
-					style:"stroke-width=1;stroke:rgb(255,0,0)"){}
+					style:"stroke:rgb(255,0,0);stroke-width:1"){}
 			}
 		}
 		heapMap.each {k, v ->
 			svg.rect(x:k[0], y:k[1], width:1, height:1,
-				style:"stroke-width=1;stroke:rgb(0,0,255)"){}
+				style:"stroke:rgb(0,0,255); stroke-width:1"){}
 		}
 		writer.write("</svg>")
+		writer.close()
 	}
 	
 	void startElement(String ns, String localName, String qName, 
@@ -102,12 +101,12 @@ class SecondPassHandler extends DefaultHandler {
 			case 'instruction':
 			def siz = Long.decode(attrs.getValue('size'))
 			instTrack += siz
-			if (!inst)
-				break
-			def address = Long.decode(attrs.getValue('address'))
-			def xPoint = (int)(instTrack/xFact)
-			def yPoint = (int)((address - min)/yFact)
-			instMap[[xPoint, yPoint]] = true
+			if (inst) {
+				def address = Long.decode(attrs.getValue('address'))
+				def xPoint = (int)(instTrack/xFact)
+				def yPoint = (int)((address - min)/yFact)
+				instMap[[xPoint, yPoint]] = true
+			}
 			break
 			
 			case 'store':
