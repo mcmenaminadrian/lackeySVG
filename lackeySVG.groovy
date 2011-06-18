@@ -14,15 +14,14 @@ class LackeySVGraph {
 		reader.parse(new InputSource(new FileInputStream(fPath)))
 		
 		println "First pass completed"
-		if (verb) {
-			println "Instruction range is:"
-			println "${handler.minInstructionAddr} - ${handler.maxInstructionAddr}"
-			println "Instruction count is ${handler.totalInstructions}"
-			println "Memory range is:"
-			println "${handler.minHeapAddr} - ${handler.maxHeapAddr}"
-			println "Biggest access is ${handler.maxSize}"
-		}
-		println "Writing to $oF width: $width height $height"
+		println "Instruction range is:"
+		println "${handler.minInstructionAddr} - ${handler.maxInstructionAddr}"
+		println "Instruction count is ${handler.totalInstructions}"
+		println "Memory range is:"
+		println "${handler.minHeapAddr} - ${handler.maxHeapAddr}"
+		println "Biggest access is ${handler.maxSize}"
+		println "Writing to $oF width: $width height: $height"
+		if (inst) println "Recording instruction memory range"
 		def handler2 = new SecondPassHandler(verb, handler, width, height,
 			inst, oF)
 		reader.setContentHandler(handler2)
@@ -41,7 +40,7 @@ svgCli.h(longOpt:'height', args: 1,
 svgCli.i(longOpt:'instructions', 'graph instructions - default false')
 svgCli.u(longOpt:'usage', 'prints this information')
 svgCli.v(longOpt:'verbose', 'prints verbose information - default false')
-svgCli.of(longOpt:'outfile', 'specify output SVG file - otherwise default')
+svgCli.of(longOpt:'outfile', 'specify output SVG file')
 
 def oAss = svgCli.parse(args)
 if (oAss.u || args.size() == 0) {
@@ -65,7 +64,6 @@ else {
 	if (oAss.of)
 		oFile = oAss.of
 
-	println "($width, $height)"
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
 			verb, oFile)
 }

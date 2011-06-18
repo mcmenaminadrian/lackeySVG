@@ -61,28 +61,28 @@ class SecondPassHandler extends DefaultHandler {
 		writer.write("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" ")
 		writer.write("\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 		writer.write(
-			"<svg width=\"$width\" height=\"$height\" version=\"1.1\" ")
+			"<svg width=\"${width + 1}px\" height=\"${height + 1}px\" version=\"1.1\" ")
 		writer.write("xmlns=\"http://www.w3.org/2000/svg\">\n")
 		
 		if (verb) println "Drawing axes"
-		svg.line(x1:0, y1:0, x2:width, y2:0,
-			style:'stroke:RGB(50,50,50);stroke-width:1'){}
-		svg.line(x1:0, y1:0, x2:0, y2:height,
-			style:'stroke:RGB(50,50,50);stroke-width:1'){}
+		svg.line(x1:0, y1:height, x2:width, y2:height,
+			style:'stroke:yellow;stroke-width:1'){}
+		svg.line(x1:0, y1:height, x2:0, y2:0,
+			style:'stroke:yellow;stroke-width:1'){}
 	}
 	
 	void endDocument()
 	{
-		if (verb) println "Mapping complete, now drawing points"
+		println "Mapping complete, now drawing points"
 		if (inst) {
 			instMap.each{k, v ->
-				svg.rect(x:k[0], y:k[1], width:1, height:1,
-					style:"stroke:rgb(255,0,0);stroke-width:1"){}
+				svg.line(x:k[0], y:k[1], x2:k[0], y2:k[1],
+					style:"stroke:red;stroke-width:1"){}
 			}
 		}
 		heapMap.each {k, v ->
-			svg.rect(x:k[0], y:k[1], width:1, height:1,
-				style:"stroke:rgb(0,0,255); stroke-width:1"){}
+			svg.line(x1:k[0], y1:k[1], x2:k[0], y2:k[1],
+				style:"stroke:blue;stroke-width:1"){}
 		}
 		writer.write("</svg>")
 		writer.close()
@@ -114,7 +114,7 @@ class SecondPassHandler extends DefaultHandler {
 			case 'modify':
 			def address = Long.decode(attrs.getValue('address'))
 			def xPoint = (int)(instTrack/xFact)
-			def yPoint = (int)((address - min)/yFact)
+			def yPoint = height - (int)((address - min)/yFact)
 			heapMap[[xPoint, yPoint]] = true
 			break	
 		}
