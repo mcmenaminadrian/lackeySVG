@@ -24,6 +24,7 @@ class SecondPassHandler extends DefaultHandler {
 	def decile
 	def instMap = [:]
 	def heapMap = [:]
+	def instRange
 	def travel = 0
 	FirstPassHandler fPH
 	
@@ -51,7 +52,7 @@ class SecondPassHandler extends DefaultHandler {
 				max = fPH.maxInstructionAddr
 		}
 		def memRange = max - min
-		def instRange = fPH.totalInstructions
+		instRange = fPH.totalInstructions
 		yFact = (int)(memRange/height)
 		if (decile)
 			yFact = (int) yFact/10
