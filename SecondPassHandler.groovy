@@ -12,6 +12,7 @@ class SecondPassHandler extends DefaultHandler {
 	def oFile
 	def width
 	def height
+	def multiheight
 	def inst
 	def writer
 	def svg
@@ -50,17 +51,10 @@ class SecondPassHandler extends DefaultHandler {
 				max = fPH.maxInstructionAddr
 		}
 		def memRange = max - min
-		if (decile != 0) {
-			def decRange = (int) memRange/10
-			def decMin = min + decRange * (decile - 1)
-			def decMax = decMin + decRange
-			min = decMin
-			max = decMax
-			memRange = decRange
-		}
-		
 		def instRange = fPH.totalInstructions
 		yFact = (int)(memRange/height)
+		if (decile)
+			yFact = (int) yFact/10
 		xFact = (int)(instRange/width)
 		instTrack = 0
 	}
@@ -86,15 +80,36 @@ class SecondPassHandler extends DefaultHandler {
 	{
 		println "]"
 		println "Mapping complete, now drawing points"
-		if (inst) {
-			instMap.each{k, v ->
-				svg.circle(cx:k[0], cy:k[1], r:1,
-					fill:"none", stroke:"red", "stroke-width":1){}
+		if (!decile) {
+			if (inst) {
+				instMap.each{k, v ->
+					svg.circle(cx:k[0], cy:k[1], r:1,
+						fill:"none", stroke:"red", "stroke-width":1){}
+				}
 			}
-		}
-		heapMap.each {k, v ->
-			svg.circle(cx:k[0], cy:k[1], r:1,
-				fill:"none", stroke:"green", "stroke-width":1){}
+			heapMap.each {k, v ->
+				svg.circle(cx:k[0], cy:k[1], r:1,
+					fill:"none", stroke:"green", "stroke-width":1){}
+			}
+		} else {
+			def miny = height * (10 * (decile - 1))
+			def maxy = miny + height
+			if (inst) {
+				instMap.each{k, v ->
+					if (k[1] in miny .. maxy) {
+						def replot = k[1] - miny
+						svg.circle(cx:k[0], cy:replot, r:1,
+							fill:"none", stroke:"red", "stroke-width":1){}
+					}
+				}
+			}
+			heapMap.each { k, v ->
+				if (k[1] in miny .. maxy) {
+					def replot = k[1] - miny
+					svg.circle(cx:k[0], cy:replot, r:1,
+						fill:"none", stroke:"green", "stroke-width":1){}
+				}
+			}
 		}
 		writer.write("\n</svg>")
 		writer.close()
@@ -114,17 +129,16 @@ class SecondPassHandler extends DefaultHandler {
 			case 'instruction':
 			def siz = Long.decode(attrs.getValue('size'))
 			instTrack += siz
-			if (((int) instTrack/40) > travel){
+			
+			if (instTrack > ((int)(instRange * travel)/100)){
 				print ">"
 				travel++
 			}
 			if (inst) {
 				def address = Long.decode(attrs.getValue('address'))
-				if (address in min .. max) {
-					def xPoint = (int)(instTrack/xFact)
-					def yPoint = height - (int)((address - min)/yFact)
-					instMap[[xPoint, yPoint]] = true
-				}
+				def xPoint = (int)(instTrack/xFact)
+				def yPoint = height - (int)((address - min)/yFact)
+				instMap[[xPoint, yPoint]] = true
 			}
 			break
 			
@@ -132,11 +146,9 @@ class SecondPassHandler extends DefaultHandler {
 			case 'load':
 			case 'modify':
 			def address = Long.decode(attrs.getValue('address'))
-			if (address in min .. max) {
-				def xPoint = (int)(instTrack/xFact)
-				def yPoint = height - (int)((address - min)/yFact)
-				heapMap[[xPoint, yPoint]] = true
-			}
+			def xPoint = (int)(instTrack/xFact)
+			def yPoint = height - (int)((address - min)/yFact)
+			heapMap[[xPoint, yPoint]] = true
 			break	
 		}
 	}
