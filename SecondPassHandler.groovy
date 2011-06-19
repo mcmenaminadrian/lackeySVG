@@ -23,6 +23,7 @@ class SecondPassHandler extends DefaultHandler {
 	def decile
 	def instMap = [:]
 	def heapMap = [:]
+	def travel = 0
 	FirstPassHandler fPH
 	
 	SecondPassHandler(def verb, def handler, def width, def height,
@@ -83,6 +84,7 @@ class SecondPassHandler extends DefaultHandler {
 	
 	void endDocument()
 	{
+		println "]"
 		println "Mapping complete, now drawing points"
 		if (inst) {
 			instMap.each{k, v ->
@@ -106,11 +108,16 @@ class SecondPassHandler extends DefaultHandler {
 			case 'lackeyml':
 			if (verb)
 				println "Beginning plot"
+			print "["
 			break
 			
 			case 'instruction':
 			def siz = Long.decode(attrs.getValue('size'))
 			instTrack += siz
+			if (((int) instTrack/40) > travel){
+				print ">"
+				travel++
+			}
 			if (inst) {
 				def address = Long.decode(attrs.getValue('address'))
 				if (address in min .. max) {
