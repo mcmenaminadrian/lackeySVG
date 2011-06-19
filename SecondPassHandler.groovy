@@ -66,9 +66,9 @@ class SecondPassHandler extends DefaultHandler {
 		
 		if (verb) println "Drawing axes"
 		svg.line(x1:0, y1:height, x2:width, y2:height,
-			style:'stroke:yellow;stroke-width:1'){}
+			style:'stroke:yellow;stroke-width:5'){}
 		svg.line(x1:0, y1:height, x2:0, y2:0,
-			style:'stroke:yellow;stroke-width:1'){}
+			style:'stroke:yellow;stroke-width:5'){}
 	}
 	
 	void endDocument()
@@ -76,15 +76,15 @@ class SecondPassHandler extends DefaultHandler {
 		println "Mapping complete, now drawing points"
 		if (inst) {
 			instMap.each{k, v ->
-				svg.line(x:k[0], y:k[1], x2:k[0], y2:k[1],
-					style:"stroke:red;stroke-width:1"){}
+				svg.circle(cx:k[0], cy:k[1], r:1,
+					fill:"red", stroke:"blue", "stroke-width":1){}
 			}
 		}
 		heapMap.each {k, v ->
-			svg.line(x1:k[0], y1:k[1], x2:k[0], y2:k[1],
-				style:"stroke:blue;stroke-width:1"){}
+			svg.circle(cx:k[0], cy:k[1], r:1,
+				fill:"blue", stroke:"red", "stroke-width":1){}
 		}
-		writer.write("</svg>")
+		writer.write("\n</svg>")
 		writer.close()
 	}
 	
