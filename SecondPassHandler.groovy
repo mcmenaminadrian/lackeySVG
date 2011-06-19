@@ -41,9 +41,9 @@ class SecondPassHandler extends DefaultHandler {
 		min = fPH.minHeapAddr
 		max = fPH.maxHeapAddr
 		if (inst) {
-			if (fPH.minInstructionAddr < fPH.minHeapAddr)
+			if (fPH.minInstructionAddr < min)
 				min = fPH.minInstructionAddr
-			if (fPH.maxInstructionAddr > fPH.maxHeapAddr)
+			if (fPH.maxInstructionAddr > max)
 				max = fPH.maxInstructionAddr
 		}
 		def memRange = max - min
@@ -66,9 +66,9 @@ class SecondPassHandler extends DefaultHandler {
 		
 		if (verb) println "Drawing axes"
 		svg.line(x1:0, y1:height, x2:width, y2:height,
-			style:'stroke:yellow;stroke-width:5'){}
+			stroke:"yellow", "stroke-width":5){}
 		svg.line(x1:0, y1:height, x2:0, y2:0,
-			style:'stroke:yellow;stroke-width:5'){}
+			stroke:"yellow", "stroke-width":5){}
 	}
 	
 	void endDocument()
@@ -77,12 +77,12 @@ class SecondPassHandler extends DefaultHandler {
 		if (inst) {
 			instMap.each{k, v ->
 				svg.circle(cx:k[0], cy:k[1], r:1,
-					fill:"red", stroke:"blue", "stroke-width":1){}
+					fill:"red", stroke:"red", "stroke-width":1){}
 			}
 		}
 		heapMap.each {k, v ->
 			svg.circle(cx:k[0], cy:k[1], r:1,
-				fill:"blue", stroke:"red", "stroke-width":1){}
+				fill:"green", stroke:"green", "stroke-width":1){}
 		}
 		writer.write("\n</svg>")
 		writer.close()
