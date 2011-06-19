@@ -55,7 +55,7 @@ class SecondPassHandler extends DefaultHandler {
 		instRange = fPH.totalInstructions
 		yFact = (int)(memRange/height)
 		if (decile)
-			yFact = (int) yFact/10
+			yFact = (int) yFact/100
 		xFact = (int)(instRange/width)
 		instTrack = 0
 	}
@@ -93,7 +93,7 @@ class SecondPassHandler extends DefaultHandler {
 					fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
-			def miny = height * (10 * (decile - 1))
+			def miny = height * (100 * (decile - 1))
 			def maxy = miny + height
 			if (inst) {
 				instMap.each{k, v ->
