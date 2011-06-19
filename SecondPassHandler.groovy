@@ -20,12 +20,13 @@ class SecondPassHandler extends DefaultHandler {
 	def max
 	def min
 	def instTrack
+	def decile
 	def instMap = [:]
 	def heapMap = [:]
 	FirstPassHandler fPH
 	
 	SecondPassHandler(def verb, def handler, def width, def height,
-		def inst, def oFile)
+		def inst, def oFile, def decile)
 	{
 		super()
 		this.verb = verb
@@ -34,6 +35,7 @@ class SecondPassHandler extends DefaultHandler {
 		this.height = height
 		this.inst = inst
 		this.oFile = oFile
+		this.decile = decile
 		
 		writer = new FileWriter(oFile)
 		svg = new MarkupBuilder(writer)
@@ -47,6 +49,14 @@ class SecondPassHandler extends DefaultHandler {
 				max = fPH.maxInstructionAddr
 		}
 		def memRange = max - min
+		if (decile != 0) {
+			def decRange = (int) memRange/10
+			def decMin = min + decRange * (decile - 1)
+			def decMax = decMin + decRange
+			min = decMin
+			max = decMax
+			memRange = decRange
+		}
 		
 		def instRange = fPH.totalInstructions
 		yFact = (int)(memRange/height)
@@ -77,12 +87,12 @@ class SecondPassHandler extends DefaultHandler {
 		if (inst) {
 			instMap.each{k, v ->
 				svg.circle(cx:k[0], cy:k[1], r:1,
-					fill:"red", stroke:"red", "stroke-width":1){}
+					fill:"none", stroke:"red", "stroke-width":1){}
 			}
 		}
 		heapMap.each {k, v ->
 			svg.circle(cx:k[0], cy:k[1], r:1,
-				fill:"green", stroke:"green", "stroke-width":1){}
+				fill:"none", stroke:"green", "stroke-width":1){}
 		}
 		writer.write("\n</svg>")
 		writer.close()
@@ -103,9 +113,11 @@ class SecondPassHandler extends DefaultHandler {
 			instTrack += siz
 			if (inst) {
 				def address = Long.decode(attrs.getValue('address'))
-				def xPoint = (int)(instTrack/xFact)
-				def yPoint = height - (int)((address - min)/yFact)
-				instMap[[xPoint, yPoint]] = true
+				if (address in min .. max) {
+					def xPoint = (int)(instTrack/xFact)
+					def yPoint = height - (int)((address - min)/yFact)
+					instMap[[xPoint, yPoint]] = true
+				}
 			}
 			break
 			
@@ -113,9 +125,11 @@ class SecondPassHandler extends DefaultHandler {
 			case 'load':
 			case 'modify':
 			def address = Long.decode(attrs.getValue('address'))
-			def xPoint = (int)(instTrack/xFact)
-			def yPoint = height - (int)((address - min)/yFact)
-			heapMap[[xPoint, yPoint]] = true
+			if (address in min .. max) {
+				def xPoint = (int)(instTrack/xFact)
+				def yPoint = height - (int)((address - min)/yFact)
+				heapMap[[xPoint, yPoint]] = true
+			}
 			break	
 		}
 	}
