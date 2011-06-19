@@ -104,7 +104,7 @@ class SecondPassHandler extends DefaultHandler {
 			if (inst) {
 				def address = Long.decode(attrs.getValue('address'))
 				def xPoint = (int)(instTrack/xFact)
-				def yPoint = (int)((address - min)/yFact)
+				def yPoint = height - (int)((address - min)/yFact)
 				instMap[[xPoint, yPoint]] = true
 			}
 			break
