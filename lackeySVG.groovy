@@ -72,7 +72,7 @@ else {
 	if (oAss.of)
 		oFile = oAss.of
 	if (oAss.p) {
-		def tPer = Integer.parseInt(oAss.p)
+		def tPer = Integer.parseInt(oAss.p); println "percentile is $tPer"
 		if (tPer > 0 && tPer <= 100)
 			percentile = tPer
 		if (oAss.r) {
