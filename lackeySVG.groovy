@@ -85,7 +85,7 @@ else {
 		}
 	}
 	if (oAss.g) 
-		pageSize = oAss.g
+		pageSize = Integer.parseInt(oAss.g)
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
 			verb, oFile, percentile, range, pageSize)
