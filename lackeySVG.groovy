@@ -6,7 +6,7 @@ import org.xml.sax.*
 class LackeySVGraph {
 
 	LackeySVGraph(def width, def height, def inst, def fPath, def verb,
-		def oF, def percentile, def range)
+		def oF, def percentile, def range, def pageSize)
 	{
 		println "Opening $fPath"
 		def handler = new FirstPassHandler(verb)
