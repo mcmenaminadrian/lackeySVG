@@ -86,7 +86,7 @@ class SecondPassHandler extends DefaultHandler {
 	{
 		println "]"
 		println "Mapping complete, now drawing points"
-		if (!decile) {
+		if (!percentile) {
 			if (inst) {
 				instMap.each{k, v ->
 					svg.circle(cx:k[0], cy:k[1], r:1,
