@@ -43,8 +43,7 @@ svgCli.h(longOpt:'height', args: 1,
 svgCli.i(longOpt:'instructions', 'graph instructions - default false')
 svgCli.u(longOpt:'usage', 'prints this information')
 svgCli.v(longOpt:'verbose', 'prints verbose information - default false')
-svgCli.p(longOpt:'percentile', args:1,
-	'only graph specified (1 - 10) decile - default is all')
+svgCli.p(longOpt:'percentile', args:1, 'lowest percentile to graph')
 svgCli.r(longOpt:'range', args:1, '(percentile) default is 10')
 svgCli.of(longOpt:'outfile', 'name output SVG file')
 
