@@ -29,10 +29,11 @@ class SecondPassHandler extends DefaultHandler {
 	def heapMap = [:]
 	def instRange
 	def travel = 0
+	def pageSize = 0
 	FirstPassHandler fPH
 	
 	SecondPassHandler(def verb, def handler, def width, def height,
-		def inst, def oFile, def percentile, def range)
+		def inst, def oFile, def percentile, def range, def pageSize)
 	{
 		super()
 		this.verb = verb
@@ -42,6 +43,7 @@ class SecondPassHandler extends DefaultHandler {
 		this.inst = inst
 		this.oFile = oFile
 		this.percentile = percentile
+		this.pageSize = 0
 		
 		writer = new FileWriter(oFile)
 		svg = new MarkupBuilder(writer)
@@ -53,6 +55,10 @@ class SecondPassHandler extends DefaultHandler {
 				min = fPH.minInstructionAddr
 			if (fPH.maxInstructionAddr > max)
 				max = fPH.maxInstructionAddr
+		}
+		if (pageSize) {
+			max = max >> pageSize
+			min = min >> pageSize
 		}
 		def memRange = max - min
 		instRange = fPH.totalInstructions
@@ -164,6 +170,7 @@ class SecondPassHandler extends DefaultHandler {
 			}
 			if (inst) {
 				def address = Long.decode(attrs.getValue('address'))
+				if (pageSize) address = address >> pageSize
 				def xPoint = (int)(instTrack/xFact)
 				def yPoint = height - (int)((address - min)/yFact)
 				instMap[[xPoint, yPoint]] = true
@@ -172,6 +179,7 @@ class SecondPassHandler extends DefaultHandler {
 			
 			case 'store':
 			def address = Long.decode(attrs.getValue('address'))
+			if (pageSize) address = address >> pageSize
 			def xPoint = (int)(instTrack/xFact)
 			def yPoint = height - (int)((address - min)/yFact)
 			storeMap[[xPoint, yPoint]] = true
@@ -179,6 +187,7 @@ class SecondPassHandler extends DefaultHandler {
 			
 			case 'load':
 			def address = Long.decode(attrs.getValue('address'))
+			if (pageSize) address = address >> pageSize
 			def xPoint = (int)(instTrack/xFact)
 			def yPoint = height - (int)((address - min)/yFact)
 			loadMap[[xPoint, yPoint]] = true
@@ -186,6 +195,7 @@ class SecondPassHandler extends DefaultHandler {
 			
 			case 'modify':
 			def address = Long.decode(attrs.getValue('address'))
+			if (pageSize) address = address >> pageSize
 			def xPoint = (int)(instTrack/xFact)
 			def yPoint = height - (int)((address - min)/yFact)
 			heapMap[[xPoint, yPoint]] = true

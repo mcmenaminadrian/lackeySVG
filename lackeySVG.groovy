@@ -23,10 +23,12 @@ class LackeySVGraph {
 		println "Biggest access is ${handler.maxSize}"
 		println "Writing to $oF width: $width height: $height"
 		if (inst) println "Recording instruction memory range"
+		if (pageSize)
+			println "Using page size granularity of ${pageSize**2} bytes"
 		if (percentile)
 			println "Starting from $percentile with range $range%"
 		def handler2 = new SecondPassHandler(verb, handler, width, height,
-			inst, oF, percentile, range)
+			inst, oF, percentile, range, pageSize)
 		reader.setContentHandler(handler2)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
 		
@@ -46,6 +48,7 @@ svgCli.v(longOpt:'verbose', 'prints verbose information - default false')
 svgCli.p(longOpt:'percentile', args:1, 'lowest percentile to graph')
 svgCli.r(longOpt:'range', args:1, '(percentile) default is 10')
 svgCli.of(longOpt:'outfile', 'name output SVG file')
+svgCli.g(longOpt:'pageshift', args:1, 'page size in power of 2 - 4KB = 12')
 
 def oAss = svgCli.parse(args)
 if (oAss.u || args.size() == 0) {
@@ -57,6 +60,7 @@ else {
 	def height = 600
 	def percentile = 0
 	def range = 1
+	def pageSize = 0
 	def inst = false
 	def verb = false
 	def oFile = "${new Date().time.toString()}.svg"
@@ -71,7 +75,7 @@ else {
 	if (oAss.of)
 		oFile = oAss.of
 	if (oAss.p) {
-		def tPer = Integer.parseInt(oAss.p); println "percentile is $tPer"
+		def tPer = Integer.parseInt(oAss.p)
 		if (tPer > 0 && tPer <= 100)
 			percentile = tPer
 		if (oAss.r) {
@@ -80,8 +84,12 @@ else {
 				range = tRange 
 		}
 	}
+	if (oAss.g) 
+		pageSize = g
+		
+	}
 	
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
-			verb, oFile, percentile, range)
+			verb, oFile, percentile, range, pageSize)
 }
