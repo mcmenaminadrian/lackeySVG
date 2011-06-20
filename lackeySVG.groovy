@@ -23,6 +23,8 @@ class LackeySVGraph {
 		println "Biggest access is ${handler.maxSize}"
 		println "Writing to $oF width: $width height: $height"
 		if (inst) println "Recording instruction memory range"
+		if (percentile)
+			println "Starting from $percentile with range $range%"
 		def handler2 = new SecondPassHandler(verb, handler, width, height,
 			inst, oF, percentile, range)
 		reader.setContentHandler(handler2)
