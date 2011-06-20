@@ -6,7 +6,7 @@ import org.xml.sax.*
 class LackeySVGraph {
 
 	LackeySVGraph(def width, def height, def inst, def fPath, def verb,
-		def oF, def decile)
+		def oF, def percentile, def range)
 	{
 		println "Opening $fPath"
 		def handler = new FirstPassHandler(verb)
@@ -24,7 +24,7 @@ class LackeySVGraph {
 		println "Writing to $oF width: $width height: $height"
 		if (inst) println "Recording instruction memory range"
 		def handler2 = new SecondPassHandler(verb, handler, width, height,
-			inst, oF, decile)
+			inst, oF, percentile, range)
 		reader.setContentHandler(handler2)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
 		
@@ -41,8 +41,9 @@ svgCli.h(longOpt:'height', args: 1,
 svgCli.i(longOpt:'instructions', 'graph instructions - default false')
 svgCli.u(longOpt:'usage', 'prints this information')
 svgCli.v(longOpt:'verbose', 'prints verbose information - default false')
-svgCli.d(longOpt:'decile', args:1,
+svgCli.p(longOpt:'percentile', args:1,
 	'only graph specified (1 - 10) decile - default is all')
+svgCli.r(longOpt:'range', args:1, '(percentile) default is 10')
 svgCli.of(longOpt:'outfile', 'name output SVG file')
 
 def oAss = svgCli.parse(args)
@@ -53,7 +54,8 @@ else {
 
 	def width = 800
 	def height = 600
-	def decile = 0
+	def percentile = 0
+	def range = 1
 	def inst = false
 	def verb = false
 	def oFile = "${new Date().time.toString()}.svg"
@@ -67,12 +69,18 @@ else {
 		verb = true
 	if (oAss.of)
 		oFile = oAss.of
-	if (oAss.d) {
-		def tDec = Integer.parseInt(oAss.d)
-		if (tDec > 0 && tDec <= 10)
-			decile = tDec
+	if (oAss.p) {
+		def tPer = Integer.parseInt(oAss.p)
+		if (tPer > 0 && tPer <= 100)
+			percentile = tPer
+		if (oAss.r) {
+			def tRange = Integer.parseInt(oAss.r)
+			if (tRange >= 1 && tRange <= (100 - percentile))
+				range = tRange 
+		}
 	}
+	
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
-			verb, oFile, decile)
+			verb, oFile, percentile, range)
 }

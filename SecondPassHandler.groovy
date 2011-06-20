@@ -21,15 +21,18 @@ class SecondPassHandler extends DefaultHandler {
 	def max
 	def min
 	def instTrack
-	def decile
+	def percentile
+	def factor = 1
 	def instMap = [:]
+	def loadMap = [:]
+	def storeMap = [:]
 	def heapMap = [:]
 	def instRange
 	def travel = 0
 	FirstPassHandler fPH
 	
 	SecondPassHandler(def verb, def handler, def width, def height,
-		def inst, def oFile, def decile)
+		def inst, def oFile, def percentile, def range)
 	{
 		super()
 		this.verb = verb
@@ -38,7 +41,7 @@ class SecondPassHandler extends DefaultHandler {
 		this.height = height
 		this.inst = inst
 		this.oFile = oFile
-		this.decile = decile
+		this.percentile = percentile
 		
 		writer = new FileWriter(oFile)
 		svg = new MarkupBuilder(writer)
@@ -54,8 +57,10 @@ class SecondPassHandler extends DefaultHandler {
 		def memRange = max - min
 		instRange = fPH.totalInstructions
 		yFact = (int)(memRange/height)
-		if (decile)
-			yFact = (int) yFact/100
+		if (percentile) {
+			factor = 100/range
+			yFact = (int) yFact/factor
+		}
 		xFact = (int)(instRange/width)
 		instTrack = 0
 	}
@@ -88,12 +93,20 @@ class SecondPassHandler extends DefaultHandler {
 						fill:"none", stroke:"red", "stroke-width":1){}
 				}
 			}
+			storeMap.each {k, v ->
+				svg.circle(cx:k[0], cy:k[1], r:1,
+					fill:"none", stroke:"pink", "stroke-width":1){}
+			}
+			loadMap.each {k, v ->
+				svg.circle(cx:k[0], cy:k[1], r:1,
+					fill:"none", stroke:"orange", "stroke-width":1){}
+			}
 			heapMap.each {k, v ->
 				svg.circle(cx:k[0], cy:k[1], r:1,
 					fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
-			def miny = height * (100 * (decile - 1))
+			def miny = height * (factor * (percentile - 1))
 			def maxy = miny + height
 			if (inst) {
 				instMap.each{k, v ->
@@ -102,6 +115,20 @@ class SecondPassHandler extends DefaultHandler {
 						svg.circle(cx:k[0], cy:replot, r:1,
 							fill:"none", stroke:"red", "stroke-width":1){}
 					}
+				}
+			}
+			storeMap.each { k, v ->
+				if (k[1] in miny .. maxy) {
+					def replot = k[1] - miny
+					svg.circle(cx:k[0], cy:replot, r:1,
+						fill:"none", stroke:"pink", "stroke-width":1){}
+				}
+			}
+			loadMap.each { k, v ->
+				if (k[1] in miny .. maxy) {
+					def replot = k[1] - miny
+					svg.circle(cx:k[0], cy:replot, r:1,
+						fill:"none", stroke:"orange", "stroke-width":1){}
 				}
 			}
 			heapMap.each { k, v ->
@@ -144,7 +171,19 @@ class SecondPassHandler extends DefaultHandler {
 			break
 			
 			case 'store':
+			def address = Long.decode(attrs.getValue('address'))
+			def xPoint = (int)(instTrack/xFact)
+			def yPoint = height - (int)((address - min)/yFact)
+			storeMap[[xPoint, yPoint]] = true
+			break
+			
 			case 'load':
+			def address = Long.decode(attrs.getValue('address'))
+			def xPoint = (int)(instTrack/xFact)
+			def yPoint = height - (int)((address - min)/yFact)
+			loadMap[[xPoint, yPoint]] = true
+			break
+			
 			case 'modify':
 			def address = Long.decode(attrs.getValue('address'))
 			def xPoint = (int)(instTrack/xFact)
