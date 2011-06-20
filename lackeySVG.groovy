@@ -24,7 +24,7 @@ class LackeySVGraph {
 		println "Writing to $oF width: $width height: $height"
 		if (inst) println "Recording instruction memory range"
 		if (pageSize)
-			println "Using page size granularity of ${pageSize**2} bytes"
+			println "Using page size granularity of ${2**pageSize} bytes"
 		if (percentile)
 			println "Starting from $percentile with range $range%"
 		def handler2 = new SecondPassHandler(verb, handler, width, height,

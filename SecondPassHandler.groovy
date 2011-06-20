@@ -12,7 +12,6 @@ class SecondPassHandler extends DefaultHandler {
 	def oFile
 	def width
 	def height
-	def multiheight
 	def inst
 	def writer
 	def svg
@@ -43,7 +42,7 @@ class SecondPassHandler extends DefaultHandler {
 		this.inst = inst
 		this.oFile = oFile
 		this.percentile = percentile
-		this.pageSize = 0
+		this.pageSize = pageSize
 		
 		writer = new FileWriter(oFile)
 		svg = new MarkupBuilder(writer)
