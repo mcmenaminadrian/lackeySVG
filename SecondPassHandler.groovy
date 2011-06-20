@@ -18,9 +18,9 @@ class SecondPassHandler extends DefaultHandler {
 	def svg
 	def xFact
 	def yFact
-	def max
-	def min
-	def instTrack
+	Long max
+	Long min
+	Long instTrack
 	def percentile
 	def factor = 1
 	def instMap = [:]
