@@ -85,12 +85,12 @@ class SecondPassHandler extends DefaultHandler {
 		writer.write("xmlns=\"http://www.w3.org/2000/svg\">\n")
 		def rPer = percentile - 1
 		if (pageSize) {
-			svg.text(x:0, y:cHeight,
+			svg.text(x:boostSize, y:cHeight,
 				style: "font-family: Helvetica; font-size: 10; fill: black",
-				"Page size $pageSize, $rPer - ${percentile + range}"){}
+				"Page size $pageSize, $rPer - ${rPer + range}%"){}
 		}
 		else {
-			svg.text(x:0, y:cHeight,
+			svg.text(x:boostSize, y:cHeight,
 				style: "font-family: Helvetica; font-size: 10; fill: black",
 				 "From $rPer - ${rPer + range}"){} 
 		}
@@ -107,28 +107,27 @@ class SecondPassHandler extends DefaultHandler {
 	void endDocument() {
 		println "]"
 		println "Mapping complete, now drawing points"
-		def cBoost = boostSize * 2
 		if (!percentile) {
 			if (inst) {
 				instMap.each{
 					k, v ->
-					svg.circle(cx:k[0] + boostSize, cy:k[1] - cBoost, r:1,
+					svg.circle(cx:k[0] + boostSize, cy:k[1] - boostSize, r:1,
 						fill:"none", stroke:"red", "stroke-width":1){}
 				}
 			}
 			storeMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] - cBoost, r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] - boostSize, r:1,
 					fill:"none", stroke:"yellow", "stroke-width":1){}
 			}
 			loadMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] - cBoost, r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] - boostSize, r:1,
 					fill:"none", stroke:"blue", "stroke-width":1){}
 			}
 			heapMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] - cBoost, r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] - boostSize, r:1,
 					fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
@@ -138,7 +137,7 @@ class SecondPassHandler extends DefaultHandler {
 				instMap.each{
 					k, v ->
 					if (k[1] in miny .. maxy) {
-						def replot = k[1] - miny - cBoost
+						def replot = k[1] - miny - boostSize
 						svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 							fill:"none", stroke:"red", "stroke-width":1){}
 					}
@@ -147,7 +146,7 @@ class SecondPassHandler extends DefaultHandler {
 			storeMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny - cBoost
+					def replot = k[1] - miny - boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"yellow", "stroke-width":1){}
 				}
@@ -155,7 +154,7 @@ class SecondPassHandler extends DefaultHandler {
 			loadMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny - cBoost
+					def replot = k[1] - miny - boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"blue", "stroke-width":1){}
 				}
@@ -163,7 +162,7 @@ class SecondPassHandler extends DefaultHandler {
 			heapMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny - cBoost
+					def replot = k[1] - miny - boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"green", "stroke-width":1){}
 				}
