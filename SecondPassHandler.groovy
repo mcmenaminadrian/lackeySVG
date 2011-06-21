@@ -184,9 +184,37 @@ class SecondPassHandler extends DefaultHandler {
 
 			case 'application':
 			def command = attrs.getValue('command')
-			svg.text(x:width-100, y: (int)height/10,  
+			def yDraw = (int) height/10
+			svg.text(x:width, y: yDraw,  
 				style:"font-family:Helvetica; font-size:10; fill: black",
 				"$command"){}
+			def yInt = (int) height/20
+			yDraw += yInt
+			if (inst) {
+				svg.rect(x:width, y: yDraw, width:5, height:5, fill:"red", 
+					stroke:"black", "stroke-width":1)
+				svg.text(x:width + 10, y:yDraw + 5,
+					style:"font-family:Helvetica; font-size:10; fill:black",
+					"Instructions")
+			}
+			yDraw += yInt
+			svg.rect(x:width, y: yDraw, width:5, height:5, fill:"green",
+				stroke:"black", "stroke-width":1)
+			svg.text(x:width + 10, y:yDraw + 5,
+				style:"font-family:Helvetica; font-size:10; fill:black",
+				"Modify")
+			yDraw += yInt
+			svg.rect(x:width, y: yDraw, width:5, height:5, fill:"blue",
+				stroke:"black", "stroke-width":1)
+			svg.text(x:width + 10, y:yDraw + 5,
+				style:"font-family:Helvetica; font-size:10; fill:black",
+				"Load")
+			yDraw += yInt
+			svg.rect(x:width, y: yDraw, width:5, height:5, fill:"yellow",
+				stroke:"black", "stroke-width":1)
+			svg.text(x:width + 10, y:yDraw + 5,
+				style:"font-family:Helvetica; font-size:10; fill:black",
+				"Store")
 			break
 			
 			case 'instruction':
