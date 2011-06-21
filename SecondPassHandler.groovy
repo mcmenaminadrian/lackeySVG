@@ -103,7 +103,7 @@ class SecondPassHandler extends DefaultHandler {
 		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
 			x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":5){}
 			
-		(0 .. 4) { i ->
+		(0 .. 4).each { i ->
 			svg.line(
 				x1:boostSize - 5 + width * i/4, y1:7 + cHeight - boostSize,
 				x2:boostSize - 5 + width * i/4, y2: 5 + cHeight - boostSize,
