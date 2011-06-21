@@ -111,23 +111,23 @@ class SecondPassHandler extends DefaultHandler {
 			if (inst) {
 				instMap.each{
 					k, v ->
-					svg.circle(cx:k[0] + boostSize, cy:k[1] - boostSize, r:1,
+					svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
 						fill:"none", stroke:"red", "stroke-width":1){}
 				}
 			}
 			storeMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] - boostSize, r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
 					fill:"none", stroke:"yellow", "stroke-width":1){}
 			}
 			loadMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] - boostSize, r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
 					fill:"none", stroke:"blue", "stroke-width":1){}
 			}
 			heapMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] - boostSize, r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
 					fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
@@ -137,7 +137,7 @@ class SecondPassHandler extends DefaultHandler {
 				instMap.each{
 					k, v ->
 					if (k[1] in miny .. maxy) {
-						def replot = k[1] - miny - boostSize
+						def replot = k[1] - miny + boostSize
 						svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 							fill:"none", stroke:"red", "stroke-width":1){}
 					}
@@ -146,7 +146,7 @@ class SecondPassHandler extends DefaultHandler {
 			storeMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny - boostSize
+					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"yellow", "stroke-width":1){}
 				}
@@ -154,7 +154,7 @@ class SecondPassHandler extends DefaultHandler {
 			loadMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny - boostSize
+					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"blue", "stroke-width":1){}
 				}
@@ -162,7 +162,7 @@ class SecondPassHandler extends DefaultHandler {
 			heapMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny - boostSize
+					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"green", "stroke-width":1){}
 				}
