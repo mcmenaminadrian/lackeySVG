@@ -87,7 +87,7 @@ class SecondPassHandler extends DefaultHandler {
 		if (pageSize) {
 			svg.text(x:boostSize, y:cHeight,
 				style: "font-family: Helvetica; font-size: 10; fill: black",
-				"Page size $pageSize, $rPer - ${rPer + range}%"){}
+				"Page size ${2**pageSize}, $rPer - ${rPer + range}% memory"){}
 		}
 		else {
 			svg.text(x:boostSize, y:cHeight,
@@ -102,6 +102,17 @@ class SecondPassHandler extends DefaultHandler {
 			stroke:"black", "stroke-width":5){}
 		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
 			x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":5){}
+			
+		for (i in  .. 4 { i->
+			svg.line(
+				x1:boostSize - 5 + width * i/4, y1:7 + cHeight - boostSize,
+				x2:boostSize - 5 + width * i/4, y2: 5 + cHeight - boostSize,
+				stroke:"black", "stroke-width":3){}
+			svg.line(
+				x1:boostSize - 3, y1:5 + cHeight - boostSize + height * i/4,
+				x2:boostSize - 5, y2:5 + cHeight - boostSize + height * i/4,
+				stroke:"black", "stroke-width":3){}  
+		}	
 	}
 
 	void endDocument() {
@@ -190,29 +201,30 @@ class SecondPassHandler extends DefaultHandler {
 				"$command"){}
 			def yInt = (int) height/20
 			yDraw += yInt
+			def margin = width + boostSize
 			if (inst) {
-				svg.rect(x:width, y: yDraw, width:5, height:5, fill:"red", 
+				svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"red", 
 					stroke:"black", "stroke-width":1)
-				svg.text(x:width + 10, y:yDraw + 5,
+				svg.text(x:margin + 10, y:yDraw + 5,
 					style:"font-family:Helvetica; font-size:10; fill:black",
 					"Instructions")
 			}
 			yDraw += yInt
-			svg.rect(x:width, y: yDraw, width:5, height:5, fill:"green",
+			svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"green",
 				stroke:"black", "stroke-width":1)
-			svg.text(x:width + 10, y:yDraw + 5,
+			svg.text(x:margin + 10, y:yDraw + 5,
 				style:"font-family:Helvetica; font-size:10; fill:black",
 				"Modify")
 			yDraw += yInt
-			svg.rect(x:width, y: yDraw, width:5, height:5, fill:"blue",
+			svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"blue",
 				stroke:"black", "stroke-width":1)
-			svg.text(x:width + 10, y:yDraw + 5,
+			svg.text(x:margin + 10, y:yDraw + 5,
 				style:"font-family:Helvetica; font-size:10; fill:black",
 				"Load")
 			yDraw += yInt
-			svg.rect(x:width, y: yDraw, width:5, height:5, fill:"yellow",
+			svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"yellow",
 				stroke:"black", "stroke-width":1)
-			svg.text(x:width + 10, y:yDraw + 5,
+			svg.text(x:margin + 10, y:yDraw + 5,
 				style:"font-family:Helvetica; font-size:10; fill:black",
 				"Store")
 			break
