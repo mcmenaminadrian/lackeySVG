@@ -30,6 +30,7 @@ class SecondPassHandler extends DefaultHandler {
 	def range
 	def travel = 0
 	def pageSize = 0
+	def boostSize = 100 //margins around the graph
 	FirstPassHandler fPH
 
 	SecondPassHandler(def verb, def handler, def width, def height,
@@ -73,14 +74,14 @@ class SecondPassHandler extends DefaultHandler {
 
 	void startDocument() {
 		if (verb) println "Writing SVG header"
-		width = width + 200
-		height = height + 100
+		width = width + 2 * boostSize
+		height = height + 2 * boostSize
 		writer.write(
 			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n")
 		writer.write("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" ")
 		writer.write("\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 		writer.write(
-		"<svg width=\"${width + 1}px\" height=\"${height + 1}px\" version=\"1.1\" ")
+		"<svg width=\"${width}px\" height=\"${height}px\" version=\"1.1\" ")
 		writer.write("xmlns=\"http://www.w3.org/2000/svg\">\n")
 		def rPer = percentile - 1
 		if (pageSize) {
@@ -100,10 +101,11 @@ class SecondPassHandler extends DefaultHandler {
 
 
 		if (verb) println "Drawing axes"
-		svg.line(x1:0, y1:height, x2:width, y2:height,
-				stroke:"yellow", "stroke-width":5){}
-		svg.line(x1:0, y1:height, x2:0, y2:0,
-					stroke:"yellow", "stroke-width":5){}
+		svg.line(x1:boostSize - 5, y1:5 + height - boostSize,
+			x2:width - boostSize, y2:5 + height - boostSize,
+			stroke:"black", "stroke-width":5){}
+		svg.line(x1:boostSize - 5, y1:5 + height - boostSize, x2:boostSize - 5,
+			y2:boostSize, stroke:"black", "stroke-width":5){}
 	}
 
 	void endDocument() {
@@ -113,23 +115,23 @@ class SecondPassHandler extends DefaultHandler {
 			if (inst) {
 				instMap.each{
 					k, v ->
-					svg.circle(cx:k[0], cy:k[1], r:1,
+					svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
 						fill:"none", stroke:"red", "stroke-width":1){}
 				}
 			}
 			storeMap.each {
 				k, v ->
-				svg.circle(cx:k[0], cy:k[1], r:1,
-					fill:"none", stroke:"pink", "stroke-width":1){}
+				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
+					fill:"none", stroke:"violet", "stroke-width":1){}
 			}
 			loadMap.each {
 				k, v ->
-				svg.circle(cx:k[0], cy:k[1], r:1,
-					fill:"none", stroke:"orange", "stroke-width":1){}
+				svg.circle(cx:k[0] + boostSize, cy:k[1], r:1,
+					fill:"none", stroke:"blue", "stroke-width":1){}
 			}
 			heapMap.each {
 				k, v ->
-				svg.circle(cx:k[0], cy:k[1], r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
 					fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
@@ -139,8 +141,8 @@ class SecondPassHandler extends DefaultHandler {
 				instMap.each{
 					k, v ->
 					if (k[1] in miny .. maxy) {
-						def replot = k[1] - miny
-						svg.circle(cx:k[0], cy:replot, r:1,
+						def replot = boostSize + k[1] - miny
+						svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 							fill:"none", stroke:"red", "stroke-width":1){}
 					}
 				}
@@ -148,24 +150,24 @@ class SecondPassHandler extends DefaultHandler {
 			storeMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny
-					svg.circle(cx:k[0], cy:replot, r:1,
-						fill:"none", stroke:"pink", "stroke-width":1){}
-					}
+					def replot = boostSize + k[1] - miny
+					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
+						fill:"none", stroke:"violet", "stroke-width":1){}
 				}
+			}
 			loadMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny
-					svg.circle(cx:k[0], cy:replot, r:1,
-						fill:"none", stroke:"orange", "stroke-width":1){}
+					def replot = boostSize + k[1] - miny
+					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
+						fill:"none", stroke:"blue", "stroke-width":1){}
 				}
 			}
 			heapMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny
-					svg.circle(cx:k[0], cy:replot, r:1,
+					def replot = boostSize + k[1] - miny
+					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"green", "stroke-width":1){}
 				}
 			}
