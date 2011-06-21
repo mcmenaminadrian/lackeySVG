@@ -74,64 +74,61 @@ class SecondPassHandler extends DefaultHandler {
 
 	void startDocument() {
 		if (verb) println "Writing SVG header"
-		width = width + 2 * boostSize
-		height = height + 2 * boostSize
+		def cWidth = width + 2 * boostSize
+		def cHeight = height + 2 * boostSize
 		writer.write(
 			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n")
 		writer.write("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" ")
 		writer.write("\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 		writer.write(
-		"<svg width=\"${width}px\" height=\"${height}px\" version=\"1.1\" ")
+		"<svg width=\"${cWidth}px\" height=\"${cHeight}px\" version=\"1.1\" ")
 		writer.write("xmlns=\"http://www.w3.org/2000/svg\">\n")
 		def rPer = percentile - 1
 		if (pageSize) {
-			svg.text(x:0, y:height,
-				style: "font-family: Helvetica; font-size: 10; fill: black") 
-			{ 
-				"Page size $pageSize, $rPer - ${percentile + range}"
-			}
+			svg.text(x:0, y:cHeight,
+				style: "font-family: Helvetica; font-size: 10; fill: black",
+				"Page size $pageSize, $rPer - ${percentile + range}"){}
 		}
 		else {
-			svg.text(x:0, y:height,
-				style: "font-family: Helvetica; font-size: 10; fill: black")
-			{ 
-				 "From $rPer - ${rPer + range}" 
-			}
+			svg.text(x:0, y:cHeight,
+				style: "font-family: Helvetica; font-size: 10; fill: black",
+				 "From $rPer - ${rPer + range}"){} 
 		}
 
 
 		if (verb) println "Drawing axes"
-		svg.line(x1:boostSize - 5, y1:5 + height - boostSize,
-			x2:width - boostSize, y2:5 + height - boostSize,
+		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
+			x2:cWidth - boostSize, y2:5 + cHeight - boostSize,
 			stroke:"black", "stroke-width":5){}
-		svg.line(x1:boostSize - 5, y1:5 + height - boostSize, x2:boostSize - 5,
-			y2:boostSize, stroke:"black", "stroke-width":5){}
+		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
+			x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":5){}
 	}
 
 	void endDocument() {
 		println "]"
 		println "Mapping complete, now drawing points"
+		def cBoost = boostSize * 2
 		if (!percentile) {
 			if (inst) {
 				instMap.each{
 					k, v ->
-					svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
+					svg.circle(cx:k[0] + boostSize, cy:k[1] - cBoost, r:1,
 						fill:"none", stroke:"red", "stroke-width":1){}
 				}
 			}
 			storeMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
-					fill:"none", stroke:"violet", "stroke-width":1){}
+				svg.circle(cx:k[0] + boostSize, cy:k[1] - cBoost, r:1,
+					fill:"none", stroke:"yellow", "stroke-width":1){}
 			}
 			loadMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1], r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] - cBoost, r:1,
 					fill:"none", stroke:"blue", "stroke-width":1){}
 			}
 			heapMap.each {
 				k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
+				svg.circle(cx:k[0] + boostSize, cy:k[1] - cBoost, r:1,
 					fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
@@ -141,7 +138,7 @@ class SecondPassHandler extends DefaultHandler {
 				instMap.each{
 					k, v ->
 					if (k[1] in miny .. maxy) {
-						def replot = boostSize + k[1] - miny
+						def replot = k[1] - miny - cBoost
 						svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 							fill:"none", stroke:"red", "stroke-width":1){}
 					}
@@ -150,15 +147,15 @@ class SecondPassHandler extends DefaultHandler {
 			storeMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = boostSize + k[1] - miny
+					def replot = k[1] - miny - cBoost
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
-						fill:"none", stroke:"violet", "stroke-width":1){}
+						fill:"none", stroke:"yellow", "stroke-width":1){}
 				}
 			}
 			loadMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = boostSize + k[1] - miny
+					def replot = k[1] - miny - cBoost
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"blue", "stroke-width":1){}
 				}
@@ -166,7 +163,7 @@ class SecondPassHandler extends DefaultHandler {
 			heapMap.each {
 				k, v ->
 				if (k[1] in miny .. maxy) {
-					def replot = boostSize + k[1] - miny
+					def replot = k[1] - miny - cBoost
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"green", "stroke-width":1){}
 				}
@@ -187,10 +184,10 @@ class SecondPassHandler extends DefaultHandler {
 			break
 
 			case 'application':
+			def command = attrs.getValue('command')
 			svg.text(x:width-100, y: (int)height/10,  
-				style:"font-family:Helvetica; font-size:10; fill: black"){
-				attrs.getValue('command')
-			}
+				style:"font-family:Helvetica; font-size:10; fill: black",
+				"$command"){}
 			break
 			
 			case 'instruction':
@@ -202,8 +199,8 @@ class SecondPassHandler extends DefaultHandler {
 				travel++
 			}
 			if (inst) {
-				def address = Long.decode(attrs.getValue('address'))
-				if (pageSize) address = address >> pageSize
+				def address = Long.decode(
+					attrs.getValue('address')) >> pageSize
 				def xPoint = (int)(instTrack/xFact)
 				def yPoint = height - (int)((address - min)/yFact)
 				instMap[[xPoint, yPoint]] = true
@@ -211,24 +208,21 @@ class SecondPassHandler extends DefaultHandler {
 			break
 
 			case 'store':
-			def address = Long.decode(attrs.getValue('address'))
-			if (pageSize) address = address >> pageSize
+			def address = Long.decode(attrs.getValue('address')) >> pageSize
 			def xPoint = (int)(instTrack/xFact)
 			def yPoint = height - (int)((address - min)/yFact)
 			storeMap[[xPoint, yPoint]] = true
 			break
 
 			case 'load':
-			def address = Long.decode(attrs.getValue('address'))
-			if (pageSize) address = address >> pageSize
+			def address = Long.decode(attrs.getValue('address')) >> pageSize
 			def xPoint = (int)(instTrack/xFact)
 			def yPoint = height - (int)((address - min)/yFact)
 			loadMap[[xPoint, yPoint]] = true
 			break
 
 			case 'modify':
-			def address = Long.decode(attrs.getValue('address'))
-			if (pageSize) address = address >> pageSize
+			def address = Long.decode(attrs.getValue('address')) >> pageSize
 			def xPoint = (int)(instTrack/xFact)
 			def yPoint = height - (int)((address - min)/yFact)
 			heapMap[[xPoint, yPoint]] = true
