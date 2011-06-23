@@ -89,14 +89,20 @@ class SecondPassHandler extends DefaultHandler {
 		svg.rect(x:0, y:0, width:cWidth, height:cHeight, fill:"white"){}
 		def rPer = percentile - 1
 		if (pageSize) {
+			def pageStr = "Page size: ${2**pageSize}"
+			if (rPer)
+				pageStr += ": $rPer to ${rPer + range}% memory"
 			svg.text(x:boostSize, y:cHeight,
 				style: "font-family: Helvetica; font-size: 10; fill: black",
-				"Page size ${2**pageSize}, $rPer - ${rPer + range}% memory"){}
+				pageStr){}
 		}
 		else {
+			def rangeStr = "From $rPer - ${rPer + range}"
+			if (rPer == 0)
+				rangeStr = "From $min to $max" 
 			svg.text(x:boostSize, y:cHeight,
 				style: "font-family: Helvetica; font-size: 10; fill: black",
-				 "From $rPer - ${rPer + range}"){} 
+				 rangeStr){} 
 		}
 
 
@@ -127,13 +133,13 @@ class SecondPassHandler extends DefaultHandler {
 				def nMin = (int) (min + memRange * ((percentile - 1) / 100))
 				def nMax = (int) (nMin + memRange * (range / 100))
 				def nRange = nMax - nMin
-				svg.text(x:boostSize - 45,
+				svg.text(x:boostSize - 60,
 					y: (int)(5 + height * i/gridMarks + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				(Long.toString(nMax - (int) (nRange * i/gridMarks), 16)))
 			}
 			else
-				svg.text(x:boostSize - 45,
+				svg.text(x:boostSize - 60,
 					y: (int)(5 + height * i/gridMarks + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				(Long.toString(max - (int) ((max - min) * i/gridMarks), 16)))
@@ -142,7 +148,7 @@ class SecondPassHandler extends DefaultHandler {
 		if (!pageSize)
 			memString = "MEMORY"
 		svg.text(x:boostSize/4, y: height / 2,
-			transform:"rotate(180, ${boostSize/4}, ${height/2})",
+			transform:"rotate(90, ${boostSize/4}, ${height/2})",
 			style: "font-family: Helvetica; font-size:10; fill:red",
 			memString)
 		
@@ -213,7 +219,7 @@ class SecondPassHandler extends DefaultHandler {
 					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"green", "stroke-width":1){}
-				}
+				`}
 			}
 		}
 		writer.write("\n</svg>")
