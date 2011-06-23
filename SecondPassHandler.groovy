@@ -107,7 +107,6 @@ class SecondPassHandler extends DefaultHandler {
 		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
 			x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":10){}
 		
-		def gridMarks = 4
 		(0 .. gridMarks).each { i ->
 			svg.line(x1:(int)(boostSize + width * i/gridMarks),
 					y1:15 + cHeight - boostSize,
@@ -124,7 +123,7 @@ class SecondPassHandler extends DefaultHandler {
 					y2:(int)(height * i/gridMarks + boostSize),
 					stroke:"lightgrey", "stroke-width":1){} 
 			if (percentile){
-				def memRange = min - max
+				def memRange = max - min
 				def nMin = (int) (min + memRange * ((percentile - 1) / 100))
 				def nMax = (int) (nMin + memRange * (range / 100))
 				def nRange = nMax - nMin
