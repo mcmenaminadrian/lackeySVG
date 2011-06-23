@@ -137,19 +137,18 @@ class SecondPassHandler extends DefaultHandler {
 					y: (int)(5 + height * i/gridMarks + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				(Long.toString(max - (int) ((max - min) * i/gridMarks), 16)))
-			
-			def memString = "PAGES"
-			if (!pageSize)
-				memString = "MEMORY"
-			svg.text(x:boostSize/2, y: height / 2, 
-			style: "font-family: Helvetica; font-size:10; rotate:90; fill:red",
-			memString)
-			
-			def instPerPixel = (int)instRange/width
-			svg.text(x:boostSize, y: height + boostSize / 2,
-				style: "font-family:Helvetica; font-size:10; fill:red",
-				"INSTRUCTIONS ($instPerPixel per pixel)") 
 		}
+		def memString = "PAGES"
+		if (!pageSize)
+			memString = "MEMORY"
+		svg.text(x:boostSize/2, y: height / 2,
+		style: "font-family: Helvetica; font-size:10; rotate:90; fill:red",
+		memString)
+		
+		def instPerPixel = (int)instRange/width
+		svg.text(x:boostSize, y: height + boostSize / 2,
+			style: "font-family:Helvetica; font-size:10; fill:red",
+			"INSTRUCTIONS ($instPerPixel per pixel)")
 	}
 
 	void endDocument() {
