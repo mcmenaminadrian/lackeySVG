@@ -83,6 +83,7 @@ class SecondPassHandler extends DefaultHandler {
 		writer.write(
 		"<svg width=\"${cWidth}px\" height=\"${cHeight}px\" version=\"1.1\" ")
 		writer.write("xmlns=\"http://www.w3.org/2000/svg\">\n")
+		svg.rect(x:0, y:0, width:cWidth, height:cHeight, fill:"white"){}
 		def rPer = percentile - 1
 		if (pageSize) {
 			svg.text(x:boostSize, y:cHeight,
@@ -97,22 +98,32 @@ class SecondPassHandler extends DefaultHandler {
 
 
 		if (verb) println "Drawing axes"
+		svg.line(x1:boostSize, y1:5 + cHeight - boostSize,
+			x2:cWidth - boostSize + 5, y2:5 + cHeight - boostSize,
+			stroke:"black", "stroke-width":10){}
 		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
-			x2:cWidth - boostSize, y2:5 + cHeight - boostSize,
-			stroke:"black", "stroke-width":5){}
-		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
-			x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":5){}
+			x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":10){}
 			
 		(0 .. 4).each { i ->
-			svg.line(
-				x1:boostSize - 5 + width * i/4, y1:10 + cHeight - boostSize,
-				x2:boostSize - 5 + width * i/4, y2: 5 + cHeight - boostSize,
-				stroke:"black", "stroke-width":3){}
-			svg.line(
-				x1:boostSize - 10, y1:5 + cHeight - boostSize + height * i/4,
-				x2:boostSize - 5, y2:5 + cHeight - boostSize + height * i/4,
-				stroke:"black", "stroke-width":3){}  
-		}	
+			svg.line(x1:(int)(boostSize + width * i/4),
+					y1:10 + cHeight - boostSize,
+					x2:(int)(boostSize + width * i/4),
+					y2: 10 + cHeight - boostSize,
+					stroke:"maroon", "stroke-width":3){}
+			svg.text(x:(int)(boostSize - 5 + width * i/4),
+				y:20 + cHeight - boostSize,
+				style: "font-family: Helvetica; font-size:10; fill: maroon",
+				((int) instRange * i / 4))
+			svg.line(x1:boostSize - 15,
+					y1:(int)(5 + cHeight - boostSize + height * i/4),
+					x2:boostSize - 5,
+					y2:(int)(5 + cHeight - boostSize + height * i/4),
+					stroke:"maroon", "stroke-width":3){} 
+			svg.text(x:boostSize - 40,
+				y: (int)(5 + cHeight - boostSize + height * i/4),
+				style: "font-family: Helvetica; font-size:10; fill: maroon",
+				(Long.toString(min + (int) ((max - min) * i/4), 16))) 
+		}
 	}
 
 	void endDocument() {
