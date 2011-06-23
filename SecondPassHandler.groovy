@@ -124,8 +124,9 @@ class SecondPassHandler extends DefaultHandler {
 					y2:(int)(height * i/gridMarks + boostSize),
 					stroke:"lightgrey", "stroke-width":1){} 
 			if (percentile){
-				def nmin = min * (percentile - 1)
-				def nmax = (int)((max * 100)/factor)
+				def memRange = min - max
+				def nMin = (int) (min + memRange * ((percentile - 1) / 100))
+				def nMax = (int) (nmin + memRange * (range / 100))
 				def nrange = nmax - nmin
 				svg.text(x:boostSize - 45,
 					y: (int)(5 + height * i/gridMarks + boostSize),
@@ -220,7 +221,7 @@ class SecondPassHandler extends DefaultHandler {
 
 			case 'application':
 			def command = attrs.getValue('command')
-			def yDraw = (int) height/10
+			def yDraw = (int) boostSize - 10
 			svg.text(x:width, y: yDraw,  
 				style:"font-family:Helvetica; font-size:10; fill: black",
 				"$command"){}
