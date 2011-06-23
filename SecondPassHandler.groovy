@@ -98,7 +98,7 @@ class SecondPassHandler extends DefaultHandler {
 
 
 		if (verb) println "Drawing axes"
-		svg.line(x1:boostSize, y1:5 + cHeight - boostSize,
+		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
 			x2:cWidth - boostSize + 5, y2:5 + cHeight - boostSize,
 			stroke:"black", "stroke-width":10){}
 		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
@@ -106,23 +106,23 @@ class SecondPassHandler extends DefaultHandler {
 			
 		(0 .. 4).each { i ->
 			svg.line(x1:(int)(boostSize + width * i/4),
-					y1:10 + cHeight - boostSize,
+					y1:15 + cHeight - boostSize,
 					x2:(int)(boostSize + width * i/4),
-					y2: 10 + cHeight - boostSize,
-					stroke:"maroon", "stroke-width":3){}
+					y2: boostSize,
+					stroke:"maroon", "stroke-width":1){}
 			svg.text(x:(int)(boostSize - 5 + width * i/4),
 				y:20 + cHeight - boostSize,
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				((int) instRange * i / 4))
 			svg.line(x1:boostSize - 15,
-					y1:(int)(5 + cHeight - boostSize + height * i/4),
-					x2:boostSize - 5,
-					y2:(int)(5 + cHeight - boostSize + height * i/4),
+					y1:(int)(height * i/4 + boostSize),
+					x2:cWidth - boostSize,
+					y2:(int)(height * i/4 + boostSize),
 					stroke:"maroon", "stroke-width":3){} 
 			svg.text(x:boostSize - 40,
-				y: (int)(5 + cHeight - boostSize + height * i/4),
+				y: (int)(5 + height * i/4 + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
-				(Long.toString(min + (int) ((max - min) * i/4), 16))) 
+				(Long.toString(max - (int) ((max - min) * i/4), 16))) 
 		}
 	}
 
