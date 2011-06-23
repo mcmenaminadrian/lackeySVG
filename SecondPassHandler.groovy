@@ -31,10 +31,12 @@ class SecondPassHandler extends DefaultHandler {
 	def travel = 0
 	def pageSize = 0
 	def boostSize = 100 //margins around the graph
+	def gridMarks = 4
 	FirstPassHandler fPH
 
 	SecondPassHandler(def verb, def handler, def width, def height,
-	def inst, def oFile, def percentile, def range, def pageSize) {
+		def inst, def oFile, def percentile, def range, def pageSize,
+		def gridMarks) {
 		super()
 		this.verb = verb
 		fPH = handler
@@ -45,6 +47,7 @@ class SecondPassHandler extends DefaultHandler {
 		this.percentile = percentile
 		this.pageSize = pageSize
 		this.range = range
+		this.gridMarks = gridMarks
 
 		writer = new FileWriter(oFile)
 		svg = new MarkupBuilder(writer)
@@ -98,31 +101,32 @@ class SecondPassHandler extends DefaultHandler {
 
 
 		if (verb) println "Drawing axes"
-		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
+		svg.line(x1:boostSize - 10, y1:5 + cHeight - boostSize,
 			x2:cWidth - boostSize + 5, y2:5 + cHeight - boostSize,
 			stroke:"black", "stroke-width":10){}
 		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
 			x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":10){}
-			
-		(0 .. 4).each { i ->
-			svg.line(x1:(int)(boostSize + width * i/4),
+		
+		def gridMarks = 4
+		(0 .. gridMarks).each { i ->
+			svg.line(x1:(int)(boostSize + width * i/gridMarks),
 					y1:15 + cHeight - boostSize,
-					x2:(int)(boostSize + width * i/4),
+					x2:(int)(boostSize + width * i/gridMarks),
 					y2: boostSize,
-					stroke:"maroon", "stroke-width":1){}
-			svg.text(x:(int)(boostSize - 5 + width * i/4),
+					stroke:"lightgrey", "stroke-width":1){}
+			svg.text(x:(int)(boostSize - 5 + width * i/gridMarks),
 				y:20 + cHeight - boostSize,
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
-				((int) instRange * i / 4))
-			svg.line(x1:boostSize - 15,
-					y1:(int)(height * i/4 + boostSize),
+				((int) instRange * i / gridMarks))
+			svg.line(x1:boostSize - 20,
+					y1:(int)(height * i/gridMarks + boostSize),
 					x2:cWidth - boostSize,
-					y2:(int)(height * i/4 + boostSize),
-					stroke:"maroon", "stroke-width":3){} 
-			svg.text(x:boostSize - 40,
-				y: (int)(5 + height * i/4 + boostSize),
+					y2:(int)(height * i/gridMarks + boostSize),
+					stroke:"lightgrey", "stroke-width":1){} 
+			svg.text(x:boostSize - 45,
+				y: (int)(5 + height * i/gridMarks + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
-				(Long.toString(max - (int) ((max - min) * i/4), 16))) 
+				(Long.toString(max - (int) ((max - min) * i/gridMarks), 16))) 
 		}
 	}
 
@@ -212,7 +216,7 @@ class SecondPassHandler extends DefaultHandler {
 				"$command"){}
 			def yInt = (int) height/20
 			yDraw += yInt
-			def margin = width + boostSize
+			def margin = width + boostSize + 10
 			if (inst) {
 				svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"red", 
 					stroke:"black", "stroke-width":1)
