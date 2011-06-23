@@ -123,8 +123,18 @@ class SecondPassHandler extends DefaultHandler {
 					x2:cWidth - boostSize,
 					y2:(int)(height * i/gridMarks + boostSize),
 					stroke:"lightgrey", "stroke-width":1){} 
-			svg.text(x:boostSize - 45,
-				y: (int)(5 + height * i/gridMarks + boostSize),
+			if (percentile){
+				def nmin = min * (percentile - 1)
+				def nmax = (int)((max * 100)/factor)
+				def nrange = nmax - nmin
+				svg.text(x:boostSize - 45,
+					y: (int)(5 + height * i/gridMarks + boostSize),
+				style: "font-family: Helvetica; font-size:10; fill: maroon",
+				(Long.toString(nmax - (int) (nrange * i/gridMarks), 16)))
+			}
+			else
+				svg.text(x:boostSize - 45,
+					y: (int)(5 + height * i/gridMarks + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				(Long.toString(max - (int) ((max - min) * i/gridMarks), 16))) 
 		}
