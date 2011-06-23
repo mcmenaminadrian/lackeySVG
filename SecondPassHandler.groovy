@@ -141,12 +141,13 @@ class SecondPassHandler extends DefaultHandler {
 		def memString = "PAGES"
 		if (!pageSize)
 			memString = "MEMORY"
-		svg.text(x:boostSize/2, y: height / 2,
-		style: "font-family: Helvetica; font-size:10; rotate:90; fill:red",
-		memString)
+		svg.text(x:boostSize/4, y: height / 2,
+			transform:"rotate(180, ${boostSize/4}, ${height/2})",
+			style: "font-family: Helvetica; font-size:10; fill:red",
+			memString)
 		
 		def instPerPixel = (int)instRange/width
-		svg.text(x:boostSize, y: height + boostSize / 2,
+		svg.text(x:boostSize, y: height + boostSize * 1.5,
 			style: "font-family:Helvetica; font-size:10; fill:red",
 			"INSTRUCTIONS ($instPerPixel per pixel)")
 	}
