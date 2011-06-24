@@ -90,7 +90,7 @@ class SecondPassHandler extends DefaultHandler {
 		def rPer = percentile - 1
 		if (pageSize) {
 			def pageStr = "Page size: ${2**pageSize}"
-			if (rPer)
+			if (percentile)
 				pageStr += ": $rPer to ${rPer + range}% memory"
 			svg.text(x:boostSize, y:cHeight,
 				style: "font-family: Helvetica; font-size: 10; fill: black",
