@@ -147,7 +147,7 @@ class ThirdPassHandler extends DefaultHandler {
 			svg.text(x:boostSize - 60,
 				y: (int)(5 + height * i/gridMarks + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
-				(Long.toString(maxWS - (int) maxWS * i/gridMarks, 10)))
+				(Long.toString((int)(maxWS - maxWS * i/gridMarks), 10)))
 		}
 		
 		wsPoints.eachWithIndex {val, i ->
