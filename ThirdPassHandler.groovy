@@ -38,9 +38,7 @@ class ThirdPassHandler extends DefaultHandler {
 		this.gridMarks = gridMarks
 		
 		//adjust instruct set size if needed
-		def minInst = fPHandler.minInstructionAddr
-		def maxInst = fPHandler.maxInstructionAddr
-		range = maxInst - minInst
+		range = fPHandler.totalInstructions
 		if (wSetInst < range/width) {
 			println(
 				"Instruction set too small, resetting to ${(int)range/width}")
