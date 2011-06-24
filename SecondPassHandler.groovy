@@ -219,7 +219,7 @@ class SecondPassHandler extends DefaultHandler {
 					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 						fill:"none", stroke:"green", "stroke-width":1){}
-				`}
+				}
 			}
 		}
 		writer.write("\n</svg>")
