@@ -6,7 +6,8 @@ import org.xml.sax.*
 class LackeySVGraph {
 
 	LackeySVGraph(def width, def height, def inst, def fPath, def verb,
-		def oF, def percentile, def range, def pageSize, def gridMarks)
+		def oF, def percentile, def range, def pageSize, def gridMarks,
+		def workingSetInst)
 	{
 		println "Opening $fPath"
 		def handler = new FirstPassHandler(verb)
@@ -34,7 +35,7 @@ class LackeySVGraph {
 		reader.parse(new InputSource(new FileInputStream(fPath)))
 		println "Second pass complete"
 		
-		def handler3 = newThirdPassHandler(verb, handler, workingSetInst,
+		def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
 			width, height)
 		reader.setContentHandler(handler3)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
@@ -56,6 +57,7 @@ svgCli.r(longOpt:'range', args:1, '(percentile) default is 10')
 svgCli.of(longOpt:'outfile', 'name output SVG file')
 svgCli.g(longOpt:'pageshift', args:1, 'page size in power of 2 - 4KB = 12')
 svgCli.m(longOpt:'gridmarks', args: 1, 'grid marks on graph - default 4')
+svgCli.s(longOpt: 'workingset', args: 1, 'instructions per working set')
 
 def oAss = svgCli.parse(args)
 if (oAss.u || args.size() == 0) {
@@ -71,6 +73,7 @@ else {
 	def inst = false
 	def verb = false
 	def gridMarks = 4
+	def wSSize = 100000
 	def oFile = "${new Date().time.toString()}.svg"
 	if (oAss.w)
 		width = Integer.parseInt(oAss.w)
@@ -96,7 +99,9 @@ else {
 		gridMarks = Integer.parseInt(oAss.m)
 	if (oAss.g) 
 		pageSize = Integer.parseInt(oAss.g)
+	if (oAss.s)
+		wSSize = Integer.parseInt(oAss.s)
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
-			verb, oFile, percentile, range, pageSize, gridMarks)
+			verb, oFile, percentile, range, pageSize, gridMarks, wSSize)
 }

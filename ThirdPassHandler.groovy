@@ -35,12 +35,12 @@ class ThirdPassHandler extends DefaultHandler {
 		this.height = height
 		
 		//adjust instruct set size if needed
-		minInst = fPH.minInstructionAddr
-		maxInst = fPH.maxInstructionAddr
-		range = maxInst - minInst
+		def minInst = fPHandler.minInstructionAddr
+		def maxInst = fPHandler.maxInstructionAddr
+		def range = maxInst - minInst
 		if (wSetInst < range/width) {
-			println
-				"Instruction range too small, resetting to ${(int)range/width}"
+			println(
+				"Instruction set too small, resetting to ${(int)range/width}")
 			this.wSetInst = (int) range/width
 		}
 		pixelUpdateRange = range/width
@@ -65,16 +65,16 @@ class ThirdPassHandler extends DefaultHandler {
 		writer.write("xmlns=\"http://www.w3.org/2000/svg\">\n")
 	}
 	
-	void addWSPoint()
+	Map addWSPoint()
 	{
 		def wsSize = mapWS.size()
 		if (wsSize > maxWS)
 			maxWS = wsSize
 		wsPoints << wsSize
-		mapWS = mapWS.findAll{
+		instLast = 0
+		return mapWS.findAll{
 			it.value > instCount - wSetInst
 		}
-		instLast = 0
 	}
 	
 	void startElement(String ns, String localName, String qName,
@@ -99,9 +99,10 @@ class ThirdPassHandler extends DefaultHandler {
 			instLast += siz
 			def address = Long.decode(attrs.getValue('address')) >> pageShift
 			mapWS[address] = instCount
-			if (instLast > pixelUpdateRange)
+			if (instLast >= pixelUpdateRange) {
 				print "x"
-				addWSPoint()
+				mapWS = addWSPoint()
+			}
 			break
 			
 			case 'store':
@@ -116,9 +117,12 @@ class ThirdPassHandler extends DefaultHandler {
 	void endDocument()
 	{
 		wsPoints.eachWithIndex {val, i ->
-			svg.circle(cx:i + boostSize, cy:val + boostSize, r:1,
+			def yFact = height/maxWS
+			def yPoint = (int) (height - val * yFact)
+			svg.circle(cx:i + boostSize, cy:yPoint + boostSize, r:1,
 				fill:"none", stroke:"black", "stroke-width":1)
 		}
-		writer.write("\n<svg>")
+		writer.write("\n</svg>")
+		writer.close()
 	}
 }
