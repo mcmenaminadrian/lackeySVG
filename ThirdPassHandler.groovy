@@ -117,6 +117,7 @@ class ThirdPassHandler extends DefaultHandler {
 		
 	void endDocument()
 	{
+		println "]"
 		//draw axes
 		svg.line(x1:boostSize - 5, y1:height + boostSize + 5,
 			x2: boostSize + width, y2:height + boostSize + 5,
