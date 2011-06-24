@@ -23,9 +23,11 @@ class ThirdPassHandler extends DefaultHandler {
 	def maxWS = 0
 	def svg
 	def writer
+	def gridMarks
+	def range
 
 	ThirdPassHandler(def verb, def fPHandler, def wSetInst,
-		def width, def height)
+		def width, def height, def gridMarks)
 	{
 		super()
 		this.verb = verb
@@ -33,11 +35,12 @@ class ThirdPassHandler extends DefaultHandler {
 		this.wSetInst = wSetInst
 		this.width = width
 		this.height = height
+		this.gridMarks = gridMarks
 		
 		//adjust instruct set size if needed
 		def minInst = fPHandler.minInstructionAddr
 		def maxInst = fPHandler.maxInstructionAddr
-		def range = maxInst - minInst
+		range = maxInst - minInst
 		if (wSetInst < range/width) {
 			println(
 				"Instruction set too small, resetting to ${(int)range/width}")
@@ -116,6 +119,37 @@ class ThirdPassHandler extends DefaultHandler {
 		
 	void endDocument()
 	{
+		//draw axes
+		svg.line(x1:boostSize - 5, y1:height + boostSize + 5,
+			x2: boostSize + width, y2:height + boostSize + 5,
+			stroke:"black", "stroke-width":10 )
+		svg.line(x1:boostSize - 5, y1: height + boostSize + 5,
+			x2: boostSize - 5, y2: boostSize,
+			stroke:"black", "stroke-width":10)
+		(0 .. gridMarks).each { i ->
+			svg.line(x1:(int)(boostSize + width * i/gridMarks),
+				y1:15 + height + boostSize,
+				x2:(int)(boostSize + width * i/gridMarks),
+				y2: boostSize,
+				stroke:"lightgrey", "stroke-width":1){}
+			
+			svg.text(x:(int)(boostSize - 5 + width * i/gridMarks),
+				y:20 + height + boostSize,
+				style: "font-family: Helvetica; font-size:10; fill: maroon",
+				((int) range * i / gridMarks))
+			
+			svg.line(x1:boostSize - 20,
+				y1:(int)(height * i/gridMarks + boostSize),
+				x2:width + boostSize,
+				y2:(int)(height * i/gridMarks + boostSize),
+				stroke:"lightgrey", "stroke-width":1){}
+	
+			svg.text(x:boostSize - 60,
+				y: (int)(5 + height * i/gridMarks + boostSize),
+				style: "font-family: Helvetica; font-size:10; fill: maroon",
+				(Long.toString(maxWS - (int) maxWS * i/gridMarks, 10)))
+		}
+		
 		wsPoints.eachWithIndex {val, i ->
 			def yFact = height/maxWS
 			def yPoint = (int) (height - val * yFact)

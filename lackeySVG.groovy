@@ -29,14 +29,14 @@ class LackeySVGraph {
 		if (percentile)
 			println "Starting from $percentile with range $range%"
 
-		def handler2 = new SecondPassHandler(verb, handler, width, height,
+/*		def handler2 = new SecondPassHandler(verb, handler, width, height,
 			inst, oF, percentile, range, pageSize, gridMarks)
 		reader.setContentHandler(handler2)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
 		println "Second pass complete"
-		
+*/		
 		def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
-			width, height)
+			width, height, gridMarks)
 		reader.setContentHandler(handler3)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
 	}
