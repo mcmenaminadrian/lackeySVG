@@ -146,8 +146,8 @@ class ThirdPassHandler extends DefaultHandler {
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				(Long.toString((int)(maxWS - maxWS * i/gridMarks), 10)))
 		}
-		def lastX = 0
-		def lastY = 0
+		def lastX = boostSize
+		def lastY = boostSize + height
 		wsPoints.eachWithIndex {val, i ->
 			def yFact = height/maxWS
 			def yPoint = boostSize + (int) (height - val * yFact)
@@ -158,7 +158,7 @@ class ThirdPassHandler extends DefaultHandler {
 			lastY = yPoint;
 		}
 		svg.text(x:boostSize/4, y: height / 2,
-			transform:"rotate(180, ${boostSize/4}, ${height/2})",
+			transform:"rotate(270, ${boostSize/4}, ${height/2})",
 			style: "font-family: Helvetica; font-size:10; fill:red",
 			"Pages in working set")
 		def strInst = "Instructions: ${(int)range/width} per pixel. Working "
