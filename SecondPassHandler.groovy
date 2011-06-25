@@ -135,7 +135,7 @@ class SecondPassHandler extends DefaultHandler {
 						(Long.toString(nMax - (int) (nRange * i/gridMarks), 16)))
 			}
 			else
-				svg.text(x:boostSize - 60,
+				svg.text(x:boostSize - 70,
 						y: (int)(5 + height * i/gridMarks + boostSize),
 						style: "font-family: Helvetica; font-size:10; fill: maroon",
 						(Long.toString(max - (int) ((max - min) * i/gridMarks), 16)))
