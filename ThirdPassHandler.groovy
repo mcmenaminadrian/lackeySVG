@@ -148,12 +148,16 @@ class ThirdPassHandler extends DefaultHandler {
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				(Long.toString((int)(maxWS - maxWS * i/gridMarks), 10)))
 		}
-		
+		def lastX = boostSize
+		def lastY = boostSize + height
 		wsPoints.eachWithIndex {val, i ->
 			def yFact = height/maxWS
-			def yPoint = (int) (height - val * yFact)
-			svg.circle(cx:i + boostSize, cy:yPoint + boostSize, r:1,
+			def yPoint = boostSize + (int) (height - val * yFact)
+			svg.line(x1: lastX, y1: lastY,
+				x2:i + boostSize, cy:yPoint,
 				fill:"none", stroke:"black", "stroke-width":1)
+			lastX = i + boostSize
+			lastY = yPoint
 		}
 		writer.write("\n</svg>")
 		writer.close()
