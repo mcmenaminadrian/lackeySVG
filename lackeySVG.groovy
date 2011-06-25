@@ -91,7 +91,7 @@ else {
 			percentile = tPer
 		if (oAss.r) {
 			def tRange = Integer.parseInt(oAss.r)
-			if (tRange >= 1 && tRange <= (100 - percentile))
+			if (tRange >= 1 && tRange <= (101 - percentile))
 				range = tRange 
 		}
 	}
