@@ -53,7 +53,7 @@ class SecondPassHandler extends DefaultHandler {
 		svg = new MarkupBuilder(writer)
 
 		min = fPH.minHeapAddr
-		max = fPH.maxHeapAddr
+		max = fPH.maxHeapAddr; println "Max: $max Min: $min"
 		if (inst) {
 			if (fPH.minInstructionAddr < min)
 				min = fPH.minInstructionAddr
@@ -61,9 +61,10 @@ class SecondPassHandler extends DefaultHandler {
 				max = fPH.maxInstructionAddr
 		}
 		if (pageSize) {
-			max = max >> pageSize
-			min = min >> pageSize
+			max = max.rightShift(pageSize)
+			min = min.rightShift(pageSize)
 		}
+		println "Max: $max Min $min"
 		Long memRange = max - min
 		instRange = fPH.totalInstructions
 		yFact = (int)(memRange/height)
