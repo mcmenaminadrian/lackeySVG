@@ -177,7 +177,7 @@ class SecondPassHandler extends DefaultHandler {
 						fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
-			def miny = height * (factor * (percentile - 1))
+			def miny = height * factor * ((percentile - 1)/100)
 			def maxy = miny + height; println "miny is $miny, maxy is $maxy"
 			if (inst) {
 				instMap.each{ k, v ->
