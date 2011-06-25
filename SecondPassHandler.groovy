@@ -53,7 +53,7 @@ class SecondPassHandler extends DefaultHandler {
 		svg = new MarkupBuilder(writer)
 
 		min = fPH.minHeapAddr
-		max = fPH.maxHeapAddr; println "Max: $max Min: $min"
+		max = fPH.maxHeapAddr;
 		if (inst) {
 			if (fPH.minInstructionAddr < min)
 				min = fPH.minInstructionAddr
@@ -61,10 +61,9 @@ class SecondPassHandler extends DefaultHandler {
 				max = fPH.maxInstructionAddr
 		}
 		if (pageSize) {
-			max = max.rightShift(pageSize)
-			min = min.rightShift(pageSize)
+			max = max >> pageSize
+			min = min >> pageSize
 		}
-		println "Max: $max Min $min"
 		Long memRange = max - min
 		instRange = fPH.totalInstructions
 		yFact = (int)(memRange/height)
@@ -125,21 +124,21 @@ class SecondPassHandler extends DefaultHandler {
 					x2:cWidth - boostSize,
 					y2:(int)(height * i/gridMarks + boostSize),
 					stroke:"lightgrey", "stroke-width":1){}
+			def memRange = max - min
 			if (percentile){
-				Long memRange = max - min; println "max: $max, min: $min memRange: $memRange"
 				Long nMin = (int) (min + memRange * ((percentile - 1) / 100))
 				Long nMax = (int) (nMin + memRange * (range / 100))
-				Long nRange = nMax - nMin; println "nMax: $nMax nMin: $nMin nRange: $nRange"
-				svg.text(x:boostSize - 60,
-						y: (int)(5 + height * i/gridMarks + boostSize),
-						style: "font-family: Helvetica; font-size:10; fill: maroon",
-						(Long.toString(nMax - (int) (nRange * i/gridMarks), 16)))
-			}
-			else
+				Long nRange = nMax - nMin;
 				svg.text(x:boostSize - 70,
 						y: (int)(5 + height * i/gridMarks + boostSize),
 						style: "font-family: Helvetica; font-size:10; fill: maroon",
-						(Long.toString(max - (int) ((max - min) * i/gridMarks), 16)))
+						Long.toString(nMax - (int) (nRange * i/gridMarks), 16))
+			}
+			else 
+				svg.text(x:boostSize - 70,
+						y: (int)(5 + height * i/gridMarks + boostSize),
+						style: "font-family: Helvetica; font-size:10; fill: maroon",
+						Long.toString(max - (int) (memRange * (i/gridMarks)), 16))
 		}
 		def memString = "PAGES"
 		if (!pageSize)
