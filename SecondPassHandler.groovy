@@ -178,7 +178,7 @@ class SecondPassHandler extends DefaultHandler {
 			}
 		} else {
 			def miny = height * (factor * (percentile - 1))
-			def maxy = miny + height
+			def maxy = miny + height; println "miny is $miny, maxy is $maxy"
 			if (inst) {
 				instMap.each{ k, v ->
 					if (k[1] in miny .. maxy) {
