@@ -164,7 +164,7 @@ class ThirdPassHandler extends DefaultHandler {
 			style: "font-family: Helvetica; font-size:10; fill:red",
 			"Pages in working set")
 		def strInst = "Instructions: ${(int)range/width} per pixel. Working "
-		strInst += "set memory: accessed in last $wsSetInst instructions."
+		strInst += "set memory: accessed in last $wSetInst instructions."
 		svg.text(x:boostSize, y: height + boostSize * 1.5,
 				style: "font-family:Helvetica; font-size:10; fill:red",
 				strInst)
