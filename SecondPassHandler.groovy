@@ -15,8 +15,8 @@ class SecondPassHandler extends DefaultHandler {
 	def inst
 	def writer
 	def svg
-	def xFact
-	def yFact
+	Long xFact
+	Long yFact
 	Long max
 	Long min
 	Long instTrack
@@ -64,7 +64,7 @@ class SecondPassHandler extends DefaultHandler {
 			max = max >> pageSize
 			min = min >> pageSize
 		}
-		def memRange = max - min
+		Long memRange = max - min
 		instRange = fPH.totalInstructions
 		yFact = (int)(memRange/height)
 		if (percentile) {
@@ -88,23 +88,19 @@ class SecondPassHandler extends DefaultHandler {
 		writer.write("xmlns=\"http://www.w3.org/2000/svg\">\n")
 		svg.rect(x:0, y:0, width:cWidth, height:cHeight, fill:"white"){}
 		def rPer = percentile - 1
+		def rangeStr
 		if (pageSize) {
-			def pageStr = "Page size: ${2**pageSize}"
+			rangeStr = "Page size: ${2**pageSize}"
 			if (percentile)
-				pageStr += ": $rPer to ${rPer + range}% memory"
-			svg.text(x:boostSize, y:cHeight,
-					style: "font-family: Helvetica; font-size: 10; fill: black",
-					pageStr){}
-		}
-		else {
-			def rangeStr = "From $rPer - ${rPer + range}"
+				rangeStr += ": $rPer to ${rPer + range}% memory"
+		} else {
+			rangeStr = "From $rPer - ${rPer + range}"
 			if (rPer == 0)
 				rangeStr = "From $min to $max"
-			svg.text(x:boostSize, y:cHeight,
-					style: "font-family: Helvetica; font-size: 10; fill: black",
-					rangeStr){}
 		}
-
+		svg.text(x:boostSize, y:cHeight,
+			style: "font-family: Helvetica; font-size: 10; fill: black",
+			rangeStr){}
 
 		if (verb) println "Drawing axes"
 		svg.line(x1:boostSize - 10, y1:5 + cHeight - boostSize,
