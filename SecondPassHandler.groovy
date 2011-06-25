@@ -134,7 +134,7 @@ class SecondPassHandler extends DefaultHandler {
 						style: "font-family: Helvetica; font-size:10; fill: maroon",
 						Long.toString(nMax - (int) (nRange * i/gridMarks), 16))
 			}
-			else { println "memRange: $memRange, i $i, max: $max and ... ${(int) (memRange * (i/gridMarks))}"
+			else { println "memRange: $memRange, i $i, max: $max and ... ${(int) (memRange/gridMarks) * i}"
 				svg.text(x:boostSize - 70,
 						y: (int)(5 + height * i/gridMarks + boostSize),
 						style: "font-family: Helvetica; font-size:10; fill: maroon",
