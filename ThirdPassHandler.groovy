@@ -148,22 +148,26 @@ class ThirdPassHandler extends DefaultHandler {
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				(Long.toString((int)(maxWS - maxWS * i/gridMarks), 10)))
 		}
-		def lastX
-		def lastY
+		def lastX = 0
+		def lastY = 0
 		wsPoints.eachWithIndex {val, i ->
 			def yFact = height/maxWS
 			def yPoint = boostSize + (int) (height - val * yFact)
-			if (i) 
-				svg.line(x1: lastX, y1: lastY,
-					x2:i + boostSize, y2:yPoint,
-					style:"fill:none; stroke:black; stroke-width:1;")
-			else
-				svg.circle(cx: i + boostSize, cy: yPoint, r:1,
-					style:"fill: none; stroke: black; stroke-width: 1;")
-			println "$i - lastX: $lastX lastY: $lastY YPoint: $yPoint"
-			lastX = i + boostSize
+			svg.line(x1: lastX, y1: lastY,
+				x2:i + 1 + boostSize, y2:yPoint,
+				style:"fill:none; stroke:red; stroke-width:1;")
+			lastX = i + 1 + boostSize
 			lastY = yPoint;
 		}
+		svg.text(x:boostSize/4, y: height / 2,
+			transform:"rotate(180, ${boostSize/4}, ${height/2})",
+			style: "font-family: Helvetica; font-size:10; fill:red",
+			"Pages in working set")
+		def strInst = "Instructions: ${(int)range/width} per pixel. Working "
+		strInst += "set memory: accessed in last $wsSetInst instructions."
+		svg.text(x:boostSize, y: height + boostSize * 1.5,
+				style: "font-family:Helvetica; font-size:10; fill:red",
+				strInst)
 		writer.write("\n</svg>")
 		writer.close()
 	}
