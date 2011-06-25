@@ -132,14 +132,13 @@ class SecondPassHandler extends DefaultHandler {
 				svg.text(x:boostSize - 70,
 						y: (int)(5 + height * i/gridMarks + boostSize),
 						style: "font-family: Helvetica; font-size:10; fill: maroon",
-						Long.toString(nMax - (int) (nRange * i/gridMarks), 16))
+						Long.toString((Long)(nMax - nRange * (i/gridMarks)), 16))
 			}
-			else { println "memRange: $memRange, i $i, max: $max gridMarks is $gridMarks and ... ${(memRange/gridMarks) * i}"
-				println "and ... ${(Long)(max - memRange * (i/gridMarks))}"
+			else 
 				svg.text(x:boostSize - 70,
 						y: (int)(5 + height * i/gridMarks + boostSize),
 						style: "font-family: Helvetica; font-size:10; fill: maroon",
-						Long.toString((Long)(max - memRange * (i/gridMarks)), 16))}
+						Long.toString((Long)(max - memRange * (i/gridMarks)), 16))
 		}
 		def memString = "PAGES"
 		if (!pageSize)
