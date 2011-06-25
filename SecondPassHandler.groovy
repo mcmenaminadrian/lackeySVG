@@ -138,7 +138,7 @@ class SecondPassHandler extends DefaultHandler {
 				svg.text(x:boostSize - 70,
 						y: (int)(5 + height * i/gridMarks + boostSize),
 						style: "font-family: Helvetica; font-size:10; fill: maroon",
-						Long.toString(max - (int) (memRange * (i/gridMarks)), 16))}
+						Long.toString(max - memRange * (i/gridMarks), 16))}
 		}
 		def memString = "PAGES"
 		if (!pageSize)
