@@ -83,7 +83,7 @@ class ThirdPassHandler extends DefaultHandler {
 		switch (qName) {
 			
 			case 'lackeyml':
-			print "["
+			println "Beginning working set plotting"
 			break
 			
 			case 'application':
@@ -100,10 +100,8 @@ class ThirdPassHandler extends DefaultHandler {
 			instLast += siz
 			def address = Long.decode(attrs.getValue('address')) >> pageShift
 			mapWS[address] = instCount
-			if (instLast >= pixelUpdateRange) {
-				print "x"
+			if (instLast >= pixelUpdateRange) 
 				mapWS = addWSPoint()
-			}
 			break
 			
 			case 'store':
@@ -117,7 +115,7 @@ class ThirdPassHandler extends DefaultHandler {
 		
 	void endDocument()
 	{
-		println "]"
+		println "Drawing working set graph"
 		//draw axes
 		svg.line(x1:boostSize - 5, y1:height + boostSize + 5,
 			x2: boostSize + width, y2:height + boostSize + 5,

@@ -268,7 +268,7 @@ class SecondPassHandler extends DefaultHandler {
 				def siz = Long.decode(attrs.getValue('size'))
 				instTrack += siz
 
-				if (instTrack > ((int)(instRange * travel)/100)){
+				if (instTrack > ((int)(instRange * travel)/40)){
 					print ">"
 					travel++
 				}
