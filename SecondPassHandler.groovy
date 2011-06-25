@@ -124,7 +124,7 @@ class SecondPassHandler extends DefaultHandler {
 					x2:cWidth - boostSize,
 					y2:(int)(height * i/gridMarks + boostSize),
 					stroke:"lightgrey", "stroke-width":1){}
-			def memRange = max - min
+			Long memRange = max - min
 			if (percentile){
 				Long nMin = (int) (min + memRange * ((percentile - 1) / 100))
 				Long nMax = (int) (nMin + memRange * (range / 100))
