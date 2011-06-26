@@ -179,7 +179,7 @@ class SecondPassHandler extends DefaultHandler {
 			}
 		} else {
 			Long miny = height * factor * ((100 -(percentile + range - 1))/100)
-			Long maxy = miny + height; println "miny is $miny, maxy is $maxy, biggest is $biggest"
+			Long maxy = miny + height;
 			if (inst) {
 				instMap.each{ k, v ->
 					if (k[1] in miny .. maxy) {
@@ -297,7 +297,6 @@ class SecondPassHandler extends DefaultHandler {
 				def address = Long.decode(attrs.getValue('address')) >> pageSize
 				def xPoint = (int)(instTrack/xFact)
 				def yPoint = (int)(height * factor - (address - min)/yFact)
-				println "address: $address, min $min, yPoint: $yPoint"
 				heapMap[[xPoint, yPoint]] = true
 				break
 		}
