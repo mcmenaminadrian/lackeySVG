@@ -15,6 +15,7 @@ class FourthPassHandler extends DefaultHandler {
 	def mapWS = [:]
 	def instCount = 0
 	def instLast = 0
+	def pageShift
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
