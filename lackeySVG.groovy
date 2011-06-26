@@ -40,7 +40,7 @@ class LackeySVGraph {
 		reader.setContentHandler(handler3)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
 */		
-		[50000, 100000, 200000, 1000000, 10000000].each { 
+		[10000, 50000, 100000, 250000, 1000000, 10000000, 20000000].each { 
 			def handler4 = new FourthPassHandler(handler, it, 12)
 			reader.setContentHandler(handler4)
 			reader.parse(new InputSource(new FileInputStream(fPath)))
