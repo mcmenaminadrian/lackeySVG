@@ -14,7 +14,6 @@ class FourthPassHandler extends DefaultHandler {
 	def totalInstructions
 	def mapWS = [:]
 	def instCount = 0
-	def instLast = 0
 	def pageShift
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
@@ -43,7 +42,7 @@ class FourthPassHandler extends DefaultHandler {
 			case 'instruction':
 			def siz = Long.decode(attrs.getValue('size'))
 			instCount += siz
-			def address = Long.decode(attrs.getValue('address')) >> pageShift
+			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
 			if (!mapWS[address]) 
 				faults++
 			mapWS[address] = instCount
@@ -54,7 +53,7 @@ class FourthPassHandler extends DefaultHandler {
 			case 'store':
 			case 'load':
 			case 'modify':
-			def address = Long.decode(attrs.getValue('address')) >> pageShift
+			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
 			if (!mapWS[address])
 				faults++
 			mapWS[address] = instLast
