@@ -28,7 +28,7 @@ class LackeySVGraph {
 			println "Using page size granularity of ${2**pageSize} bytes"
 		if (percentile)
 			println "Starting from $percentile with range $range%"
-
+/*
 		def handler2 = new SecondPassHandler(verb, handler, width, height,
 			inst, oF, percentile, range, pageSize, gridMarks)
 		reader.setContentHandler(handler2)
@@ -39,6 +39,12 @@ class LackeySVGraph {
 			width, height, gridMarks)
 		reader.setContentHandler(handler3)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
+*/		
+		[50000, 100000, 1000000].each { 
+			def handler4 = new FourthPassHandler(handler, it, 12)
+			reader.setContentHandler(handler4)
+			reader.parse(new InputSource(new FileInputStream(fPath)))
+		}
 	}
 }
 
