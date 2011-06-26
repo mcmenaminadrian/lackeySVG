@@ -32,6 +32,7 @@ class SecondPassHandler extends DefaultHandler {
 	def pageSize = 0
 	def boostSize = 100 //margins around the graph
 	def gridMarks = 4
+	def biggest
 	FirstPassHandler fPH
 
 	SecondPassHandler(def verb, def handler, def width, def height,
@@ -72,7 +73,7 @@ class SecondPassHandler extends DefaultHandler {
 			yFact = (int) yFact/factor
 		}
 		xFact = (int)(instRange/width)
-		instTrack = 0
+		instTrack = 0; println "yFact is $yFact"
 	}
 
 	void startDocument() {
@@ -177,8 +178,8 @@ class SecondPassHandler extends DefaultHandler {
 						fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
-			def miny = height * factor * ((percentile - 1)/100)
-			def maxy = miny + height; println "miny is $miny, maxy is $maxy"
+			Long miny = height * factor * ((100 -(percentile + range - 1))/100)
+			Long maxy = miny + height; println "miny is $miny, maxy is $maxy, biggest is $biggest"
 			if (inst) {
 				instMap.each{ k, v ->
 					if (k[1] in miny .. maxy) {
@@ -272,7 +273,7 @@ class SecondPassHandler extends DefaultHandler {
 					def address = Long.decode(
 							attrs.getValue('address')) >> pageSize
 					def xPoint = (int)(instTrack/xFact)
-					def yPoint = height - (int)((address - min)/yFact)
+					def yPoint = (int)(height * factor - (address - min)/yFact)
 					instMap[[xPoint, yPoint]] = true
 				}
 				break
@@ -280,21 +281,23 @@ class SecondPassHandler extends DefaultHandler {
 			case 'store':
 				def address = Long.decode(attrs.getValue('address')) >> pageSize
 				def xPoint = (int)(instTrack/xFact)
-				def yPoint = height - (int)((address - min)/yFact)
+				def yPoint = (int)(height * factor - (address - min)/yFact)
 				storeMap[[xPoint, yPoint]] = true
+				if (yPoint > biggest) biggest = yPoint
 				break
 
 			case 'load':
 				def address = Long.decode(attrs.getValue('address')) >> pageSize
 				def xPoint = (int)(instTrack/xFact)
-				def yPoint = height - (int)((address - min)/yFact)
+				def yPoint = (int)(height * factor - (address - min)/yFact)
 				loadMap[[xPoint, yPoint]] = true
 				break
 
 			case 'modify':
 				def address = Long.decode(attrs.getValue('address')) >> pageSize
 				def xPoint = (int)(instTrack/xFact)
-				def yPoint = height - (int)((address - min)/yFact)
+				def yPoint = (int)(height * factor - (address - min)/yFact)
+				println "address: $address, min $min, yPoint: $yPoint"
 				heapMap[[xPoint, yPoint]] = true
 				break
 		}
