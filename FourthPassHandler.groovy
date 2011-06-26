@@ -24,8 +24,8 @@ class FourthPassHandler extends DefaultHandler {
 		this.pageShift = pageShift
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
-		def min = fPH.minInstructionAddr
-		def max = fPH.maxInstructionAddr
+		def min = firstPassHandler.minInstructionAddr
+		def max = firstPassHandler.maxInstructionAddr
 		instRange = max - min
 	}
 	
