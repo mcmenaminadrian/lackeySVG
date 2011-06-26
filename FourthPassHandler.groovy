@@ -50,7 +50,6 @@ class FourthPassHandler extends DefaultHandler {
 			mapWS[address] = instCount
 			if (instCount >= theta)
 				mapWS = cleanWS()
-			faulted = false
 			break
 			
 			case 'store':
