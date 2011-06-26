@@ -28,7 +28,7 @@ class FourthPassHandler extends DefaultHandler {
 	}
 	
 	Map cleanWS()
-	{ println "Never called"
+	{
 		return mapWS.findAll{
 			it.value > instCount - theta
 		}
