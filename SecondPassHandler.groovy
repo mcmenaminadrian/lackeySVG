@@ -73,7 +73,7 @@ class SecondPassHandler extends DefaultHandler {
 			yFact = (int) yFact/factor
 		}
 		xFact = (int)(instRange/width)
-		instTrack = 0; println "yFact is $yFact"
+		instTrack = 0;
 	}
 
 	void startDocument() {
