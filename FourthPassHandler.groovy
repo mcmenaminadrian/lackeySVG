@@ -11,7 +11,7 @@ class FourthPassHandler extends DefaultHandler {
 	def theta
 	def faults = 0
 	def firstPassHandler
-	def instRange
+	def totalInstructions
 	def mapWS = [:]
 	def instCount = 0
 	def instLast = 0
@@ -24,9 +24,8 @@ class FourthPassHandler extends DefaultHandler {
 		this.pageShift = pageShift
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
-		def min = firstPassHandler.minInstructionAddr
-		def max = firstPassHandler.maxInstructionAddr
-		instRange = max - min
+		
+		totalInstructions = firstPassHandler.totalInstructions
 	}
 	
 	Map cleanWS()
@@ -66,7 +65,7 @@ class FourthPassHandler extends DefaultHandler {
 	void endDocument()
 	{
 		println "Run for theta of $theta instructions completed:"
-		println "Total faults $faults, with fault rate of ${instRange/faults}"
+		println "Total faults $faults, with fault rate of ${faults/totalInstructions}"
 	}
 	
 }
