@@ -48,6 +48,7 @@ class LackeySVGraph {
 			reader.parse(new InputSource(new FileInputStream(fPath)))
                             thetaMap[it] = handler4.faults
 		}
+                  def graphTheta = new GraphTheta(thetaMap)
 	}
 }
 
