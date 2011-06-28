@@ -52,7 +52,7 @@ class LackeySVGraph {
 		}
 		(stepTheta .. handler.totalInstructions).step(stepTheta) {
 			def steps = it
-			def th = Thread.start(pass(steps))
+			def th = Thread.startDaemon(pass(steps))
 		}
 		def graphTheta = new GraphTheta(thetaMap, width, height,
 			handler.totalInstructions)
