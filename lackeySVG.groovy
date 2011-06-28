@@ -47,7 +47,7 @@ class LackeySVGraph {
 			def handler4 = new FourthPassHandler(handler, steps, 12)
 			reader.setContentHandler(handler4)
 			reader.parse(new InputSource(new FileInputStream(fPath)))
-			thetaMap[n] handler4.faults
+			thetaMap[steps]=handler4.faults
 		}
 		(stepTheta .. handler.totalInstructions).step(stepTheta) {
 			def steps = it
