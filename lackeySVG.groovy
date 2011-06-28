@@ -49,7 +49,7 @@ class LackeySVGraph {
 			Closure pass = {
 				println "steps is $steps"
 				def handler4 = new FourthPassHandler(handler, steps, 12)
-				def saxReader = new SAXParserFactory.newInstance().newSAXParser().XMLReader
+				def saxReader = SAXParserFactory.newInstance().newSAXParser().XMLReader
 				saxReader.setContentHandler(handler4)
 				saxReader.parse(new InputSource(new FileInputStream(fPath)))
 				thetaMap[steps]=handler4.faults
