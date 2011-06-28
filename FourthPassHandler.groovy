@@ -64,7 +64,7 @@ class FourthPassHandler extends DefaultHandler {
 	void endDocument()
 	{
 		println "Run for theta of $theta instructions completed:"
-		println "Total faults $faults, with fault rate of ${faults/totalInstructions}"
+		println "Total faults $faults, with g() of ${totalInstructions/faults}"
 	}
 	
 }

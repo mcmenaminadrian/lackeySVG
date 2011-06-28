@@ -41,12 +41,16 @@ class LackeySVGraph {
 		reader.parse(new InputSource(new FileInputStream(fPath)))
 */		
 		def thetaMap = [:]
-		def stepTheta = handler.totalInstructions/width
-		((stepTheta .. handler.totalInstructions).step(stepTheta)).each {
-			def handler4 = new FourthPassHandler(handler, it, 12)
+		def stepTheta = (int) handler.totalInstructions/width
+		def pass = {steps ->
+			def handler4 = new FourthPassHandler(handler, steps, 12)
 			reader.setContentHandler(handler4)
 			reader.parse(new InputSource(new FileInputStream(fPath)))
-                            thetaMap[it] = handler4.faults
+			thetaMap[n] handler4.faults
+		}
+		(stepTheta .. handler.totalInstructions).step(stepTheta) {
+			def steps = it
+			def th = Thread.start(pass(steps))
 		}
 		def graphTheta = new GraphTheta(thetaMap, width, height,
 			handler.totalInstructions)
