@@ -50,10 +50,11 @@ class LackeySVGraph {
 			reader.parse(new InputSource(new FileInputStream(fPath)))
 			thetaMap[steps]=handler4.faults
 		}
-		(stepTheta .. handler.totalInstructions).step(stepTheta) {
+		Closure stepClosure = {
 			def steps = it
-			def th = Thread.startDaemon(pass(steps))
+			Thread.start pass(steps)
 		}
+		(stepTheta .. handler.totalInstructions).step(stepTheta, stepClosure)
 		def graphTheta = new GraphTheta(thetaMap, width, height,
 			handler.totalInstructions)
 	}
