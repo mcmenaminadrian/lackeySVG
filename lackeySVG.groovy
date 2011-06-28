@@ -43,7 +43,8 @@ class LackeySVGraph {
 */		
 		def thetaMap = [:]
 		def stepTheta = (int) handler.totalInstructions/width
-		def pass = {steps ->
+		Closure pass = {steps ->
+			println "steps is $steps"
 			def handler4 = new FourthPassHandler(handler, steps, 12)
 			reader.setContentHandler(handler4)
 			reader.parse(new InputSource(new FileInputStream(fPath)))
