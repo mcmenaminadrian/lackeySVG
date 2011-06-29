@@ -42,12 +42,12 @@ class FourthPassHandler extends DefaultHandler {
 			case 'instruction':
 			def siz = Long.decode(attrs.getValue('size'))
 			instCount += siz
+			//model Linux LRU so evict even if no fault
+			if (instCount > theta)
+				mapWS = cleanWS()
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
 			if (!mapWS[address]) {
 				faults++
-				//in real world only evict on fault
-				if (instCount > theta)
-					mapWS = cleanWS()
 			}
 			mapWS[address] = instCount
 			
