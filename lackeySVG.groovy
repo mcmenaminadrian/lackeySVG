@@ -29,21 +29,28 @@ class LackeySVGraph {
 			println "Using page size granularity of ${2**pageSize} bytes"
 		if (percentile)
 			println "Starting from $percentile with range $range%"
-/*
-		def handler2 = new SecondPassHandler(verb, handler, width, height,
+
+		Thread.start {
+			def handler2 = new SecondPassHandler(verb, handler, width, height,
 			inst, oF, percentile, range, pageSize, gridMarks)
-		reader.setContentHandler(handler2)
-		reader.parse(new InputSource(new FileInputStream(fPath)))
-		println "Second pass complete"
-		
-		def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
-			width, height, gridMarks)
-		reader.setContentHandler(handler3)
-		reader.parse(new InputSource(new FileInputStream(fPath)))
-*/		
+			def saxReader = SAXParserFactory.newInstance().
+				newSAXParser().XMLReader	
+			saxReader.setContentHandler(handler2)
+			saxReader.parse(new InputSource(new FileInputStream(fPath)))
+			println "Second pass complete"
+		}
+		Thread.start {
+			def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
+				width, height, gridMarks)
+			def saxReader = SAXParserFactory.newInstance().
+				newSAXParser().XMLReader
+			saxReader.setContentHandler(handler3)
+			saxReader.parse(new InputSource(new FileInputStream(fPath)))
+		}
+
 		def thetaMap = [:]
 		def stepTheta = (int) handler.totalInstructions/width
-
+		
 		Closure stepClosure = {
 			def steps = it
 			Closure pass = {
