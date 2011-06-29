@@ -43,11 +43,14 @@ class FourthPassHandler extends DefaultHandler {
 			def siz = Long.decode(attrs.getValue('size'))
 			instCount += siz
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS[address]) 
+			if (!mapWS[address]) {
 				faults++
+				//in real world only evict on fault
+				if (instCount > theta)
+					mapWS = cleanWS()
+			}
 			mapWS[address] = instCount
-			if (instCount >= theta)
-				mapWS = cleanWS()
+			
 			break
 			
 			case 'store':

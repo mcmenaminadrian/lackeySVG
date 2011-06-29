@@ -5,6 +5,8 @@ import java.util.concurrent.*
 
 
 class LackeySVGraph {
+	
+	def THREADS = 4
 
 	LackeySVGraph(def width, def height, def inst, def fPath, def verb,
 		def oF, def percentile, def range, def pageSize, def gridMarks,
@@ -30,7 +32,10 @@ class LackeySVGraph {
 		if (percentile)
 			println "Starting from $percentile with range $range%"
 
-		Thread.start {
+		def pool = Executors.newFixedThreadPool(THREADS)
+		
+			
+		def memClosure = {
 			def handler2 = new SecondPassHandler(verb, handler, width, height,
 			inst, oF, percentile, range, pageSize, gridMarks)
 			def saxReader = SAXParserFactory.newInstance().
@@ -39,7 +44,8 @@ class LackeySVGraph {
 			saxReader.parse(new InputSource(new FileInputStream(fPath)))
 			println "Second pass complete"
 		}
-		Thread.start {
+		
+		def wsClosure = {
 			def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
 				width, height, gridMarks)
 			def saxReader = SAXParserFactory.newInstance().
@@ -47,11 +53,19 @@ class LackeySVGraph {
 			saxReader.setContentHandler(handler3)
 			saxReader.parse(new InputSource(new FileInputStream(fPath)))
 		}
+		
+		pool.submit(memClosure as Callable)
+		pool.submit(wsClosure as Callable)
 
 		def thetaMap = [:]
 		def stepTheta = (int) handler.totalInstructions/width
 		
 		Closure stepClosure = {
+			def steps = it
+			
+			Thread.start pass
+		}
+		(stepTheta .. handler.totalInstructions).step(stepTheta){
 			def steps = it
 			Closure pass = {
 				println "steps is $steps"
@@ -61,9 +75,10 @@ class LackeySVGraph {
 				saxReader.parse(new InputSource(new FileInputStream(fPath)))
 				thetaMap[steps]=handler4.faults
 			}
-			Thread.start pass
+			pool.submit(pass as Callable)
 		}
-		(stepTheta .. handler.totalInstructions).step(stepTheta, stepClosure)
+		pool.awaitTermination 5, DAYS
+			
 		def graphTheta = new GraphTheta(thetaMap, width, height,
 			handler.totalInstructions)
 	}
