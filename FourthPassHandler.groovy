@@ -24,6 +24,7 @@ class FourthPassHandler extends DefaultHandler {
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
+		println totalInstructions
 		def sortWS = {a, b ->
 			return (a.value).compareTo(b.value)
 		}
