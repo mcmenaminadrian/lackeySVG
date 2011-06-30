@@ -28,6 +28,7 @@ class FourthPassHandler extends DefaultHandler {
 			return (a.value).compareTo(b.value)
 		}
 		mapWS = new TreeMap(sortWS)
+		println mapWS
 	}
 	
 	void cleanWS()
