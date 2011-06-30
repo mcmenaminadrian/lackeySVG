@@ -24,12 +24,10 @@ class FourthPassHandler extends DefaultHandler {
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
-		println totalInstructions
 		def sortWS = [compare: {a, b ->
 			return (a.value).compareTo(b.value)
 		} ] as Comparator
 		mapWS = new TreeMap(sortWS)
-		println mapWS
 	}
 	
 	void cleanWS()
@@ -48,7 +46,6 @@ class FourthPassHandler extends DefaultHandler {
 		switch (qName) {
 			
 			case 'instruction':
-			println "hehere"
 			def siz = Long.decode(attrs.getValue('size'))
 			instCount += siz
 			//model Linux LRU so evict even if no fault
