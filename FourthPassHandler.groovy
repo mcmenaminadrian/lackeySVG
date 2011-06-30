@@ -30,13 +30,14 @@ class FourthPassHandler extends DefaultHandler {
 		mapWS = new TreeMap(sortWS)
 	}
 	
-	Map cleanWS()
-	{
+	void cleanWS()
+	{ 
+		println "Key: ${mapWS.firstEntry().getKey}  Value: ${mapWS.firstEntry.getValue()}"
 		while ((mapWS.firstEntry()).getValue() < instCount - theta)
 		{
 			mapWS.remove((mapWS.firstEntry()).getKey())
 		}
-		return mapWS
+		
 	}
 	
 	void startElement(String ns, String localName, String qName,
@@ -45,11 +46,12 @@ class FourthPassHandler extends DefaultHandler {
 		switch (qName) {
 			
 			case 'instruction':
+			println "hehere"
 			def siz = Long.decode(attrs.getValue('size'))
 			instCount += siz
 			//model Linux LRU so evict even if no fault
 			if (instCount > theta)
-				mapWS = cleanWS()
+				cleanWS()
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
 			if (!mapWS[address]) {
 				faults++
