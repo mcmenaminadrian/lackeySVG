@@ -12,7 +12,7 @@ class FourthPassHandler extends DefaultHandler {
 	def faults = 0
 	def firstPassHandler
 	def totalInstructions
-	def mapWS = [:]
+	def mapWS
 	def instCount = 0
 	def pageShift
 	
@@ -23,15 +23,20 @@ class FourthPassHandler extends DefaultHandler {
 		this.pageShift = pageShift
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
-		
 		totalInstructions = firstPassHandler.totalInstructions
+		def sortWS = {a, b ->
+			return (a.value).compareTo(b.value)
+		}
+		mapWS = new TreeMap(sortWS)
 	}
 	
 	Map cleanWS()
 	{
-		return mapWS.findAll{
-			it.value > instCount - theta
+		while ((mapWS.firstEntry()).getValue() < instCount - theta)
+		{
+			mapWS.remove((mapWS.firstEntry()).getKey())
 		}
+		return mapWS
 	}
 	
 	void startElement(String ns, String localName, String qName,
