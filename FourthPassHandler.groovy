@@ -53,10 +53,10 @@ class FourthPassHandler extends DefaultHandler {
 			if (instCount > theta)
 				cleanWS()
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS[address]) {
+			if (!mapWS.get(address)) {
 				faults++
 			}
-			mapWS[address] = instCount
+			mapWS.put(address, instCount)
 			
 			break
 			
