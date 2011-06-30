@@ -64,9 +64,9 @@ class FourthPassHandler extends DefaultHandler {
 			case 'load':
 			case 'modify':
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS[address])
+			if (!mapWS.get(address))
 				faults++
-			mapWS[address] = instCount
+			mapWS.put(address, instCount)
 			break
 		}
 	}
