@@ -6,7 +6,7 @@ import java.util.concurrent.*
 
 class LackeySVGraph {
 	
-	def THREADS = 4
+	def THREADS = 3
 
 	LackeySVGraph(def width, def height, def inst, def fPath, def verb,
 		def oF, def percentile, def range, def pageSize, def gridMarks,
