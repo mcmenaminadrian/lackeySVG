@@ -30,6 +30,7 @@ class FourthPassHandler extends DefaultHandler {
 	Map cleanWS()
 	{
 		mapWS.sort{a, b -> a.value <=> b.value}
+		mapWS.sort()
 		def vals = mapWS.values()
 		println vals
 		return mapWS.findAll{
