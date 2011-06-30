@@ -25,7 +25,7 @@ class FourthPassHandler extends DefaultHandler {
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
 		def sortWS = [compare: {a, b ->
-			return (a.value).compareTo(b.value)
+			return (a.getKey().getValue()).compareTo(b.getKey().getValue())
 		} ] as Comparator
 		mapWS = new TreeMap(sortWS)
 		println mapWS
