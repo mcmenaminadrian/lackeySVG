@@ -12,7 +12,7 @@ class FourthPassHandler extends DefaultHandler {
 	def faults = 0
 	def firstPassHandler
 	def totalInstructions
-	def mapWS
+	def mapWS = [:]
 	def instCount = 0
 	def pageShift
 	
@@ -24,21 +24,17 @@ class FourthPassHandler extends DefaultHandler {
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
-		def sortWS = [compare: {a, b ->
-			return (a.getKey().getValue()).compareTo(b.getKey().getValue())
-		} ] as Comparator
-		mapWS = new TreeMap(sortWS)
-		println mapWS
+		
 	}
 	
-	void cleanWS()
-	{ 
-		println "Key: ${mapWS.firstEntry().getKey}  Value: ${mapWS.firstEntry.getValue()}"
-		while ((mapWS.firstEntry()).getValue() < instCount - theta)
-		{
-			mapWS.remove((mapWS.firstEntry()).getKey())
+	Map cleanWS()
+	{
+		mapWS.sort{a, b -> a.value <=> b.value}
+		def vals = mapWS.values()
+		println vals
+		return mapWS.findAll{
+			it.value > instCount - theta
 		}
-		
 	}
 	
 	void startElement(String ns, String localName, String qName,
@@ -51,12 +47,12 @@ class FourthPassHandler extends DefaultHandler {
 			instCount += siz
 			//model Linux LRU so evict even if no fault
 			if (instCount > theta)
-				cleanWS()
+				mapWS = cleanWS()
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS.get(address)) {
+			if (!mapWS[address]) {
 				faults++
 			}
-			mapWS.put(address, instCount)
+			mapWS[address] = instCount
 			
 			break
 			
@@ -64,9 +60,9 @@ class FourthPassHandler extends DefaultHandler {
 			case 'load':
 			case 'modify':
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS.get(address))
+			if (!mapWS[address])
 				faults++
-			mapWS.put(address, instCount)
+			mapWS[address] = instCount
 			break
 		}
 	}
