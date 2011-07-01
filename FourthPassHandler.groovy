@@ -14,6 +14,7 @@ class FourthPassHandler extends DefaultHandler {
 	def totalInstructions
 	def mapWS
 	def instCount = 0
+	def nextCount = 0
 	def pageShift
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
@@ -32,10 +33,11 @@ class FourthPassHandler extends DefaultHandler {
 		def cut = instCount - theta
 		Iterator it = mapWS.entrySet().iterator()
 		while (it.hasNext()){
-			Map.Entry page = (Map.Entry)it.next(); println page
-			if (page.getValue() < cut)
-				mapWS.remove(page.getKey())
-			else
+			Map.Entry page = (Map.Entry)it.next(); 
+			nextCount = page.getValue()
+			if (nextCount < cut)
+				it.remove()
+			else 
 				break
 		}
 	}
@@ -54,9 +56,8 @@ class FourthPassHandler extends DefaultHandler {
 			
 			mapWS[address] = instCount
 
-			if (instCount > theta)
+			if (instCount > theta && instCount >= nextCount)
 				cleanWS()
-			
 			break
 			
 			case 'store':
