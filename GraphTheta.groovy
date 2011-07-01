@@ -6,8 +6,8 @@ class GraphTheta {
 	{
 		println "Drawing lifetime function"
 		thetaMap.sort()
-		def gs = thetaMap.keySet()
-		def thetas = thetaMap.values()
+		def thetas = thetaMap.keySet()
+		def gs = thetaMap.values()
 		def maxG = gs.max()
 		def minG = gs.min()
 		def maxT = thetas.max()
