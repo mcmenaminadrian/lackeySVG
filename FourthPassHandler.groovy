@@ -29,7 +29,7 @@ class FourthPassHandler extends DefaultHandler {
 	
 	void cleanWS()
 	{
-		mapWS.findAll{
+		mapWS = mapWS.findAll{
 			it.value > instCount - theta
 		}
 	}
