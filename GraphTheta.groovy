@@ -7,9 +7,9 @@ class GraphTheta {
 		println "Drawing lifetime function"
 		thetaMap.sort()
 		def thetas = thetaMap.keySet()
-		def gs = thetaMap.values()
-		def maxG = gs.max()
-		def minG = gs.min()
+		def fs = thetaMap.values()
+		def minG = 1/fs.max()
+		def maxG = 1/fs.min()
 		def maxT = thetas.max()
 		def minT = thetas.min()
 		def rangeT = maxT - minT 
@@ -62,7 +62,7 @@ class GraphTheta {
 		def lastY = boostSize + height
 		def yFact = height/maxG
 		thetaMap.eachWithIndex {key, val, i ->
-			def yPoint = boostSize + (int) (height - val * yFact)
+			def yPoint = boostSize + (int) (height - (1 / val) * yFact)
 			svg.line(x1: lastX, y1: lastY,
 				x2:i + 1 + boostSize, y2:yPoint,
 				style:"fill:none; stroke:red; stroke-width:1;")
