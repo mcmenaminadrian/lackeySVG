@@ -2,7 +2,7 @@ import groovy.xml.MarkupBuilder
 
 class GraphTheta {
 
-	GraphTheta(def ThetaMap, def width, def height, def totalInst)
+	GraphTheta(def ThetaMap, def width, def height, def totalInst, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"
 		ThetaMap.sort()
@@ -14,7 +14,6 @@ class GraphTheta {
 		def minT = thetas.min()
 		def rangeT = maxT - minT 
 		def rangeG = maxG - minG
-		def gridMarks = 5
 		def writer = new FileWriter ("THETA${new Date().time.toString()}.svg")
 		def svg = new MarkupBuilder(writer)
 		//header etc
