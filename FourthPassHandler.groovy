@@ -12,7 +12,7 @@ class FourthPassHandler extends DefaultHandler {
 	def faults = 0
 	def firstPassHandler
 	def totalInstructions
-	def mapWS = [:]
+	def mapWS
 	def instCount = 0
 	def pageShift
 	
@@ -24,13 +24,20 @@ class FourthPassHandler extends DefaultHandler {
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
+		mapWS = new LinkedHashMap(128, 0.9, true)
 		
 	}
 	
 	void cleanWS()
 	{
-		mapWS = mapWS.findAll{
-			it.value > instCount - theta
+		def cut = instCount - theta
+		Iterator it = mapWS.entrySet().iterator()
+		while (it.hasNext()){
+			Map.Entry page = (Map.Entry)it.next()
+			if (page.getValue() < cut)
+				mapWS.remove(page.getKey())
+			else
+				break
 		}
 	}
 	
@@ -42,14 +49,14 @@ class FourthPassHandler extends DefaultHandler {
 			case 'instruction':
 			def siz = Long.decode(attrs.getValue('size'))
 			instCount += siz
-			//model Linux LRU so evict even if no fault
+			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
+			if (!mapWS[address]) 
+				faults++
+			
+			mapWS[address] = instCount
+
 			if (instCount > theta)
 				cleanWS()
-			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS[address]) {
-				faults++
-			}
-			mapWS[address] = instCount
 			
 			break
 			
