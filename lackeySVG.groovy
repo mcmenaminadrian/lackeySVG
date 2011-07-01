@@ -81,7 +81,7 @@ class LackeySVGraph {
 		pool.awaitTermination 5, TimeUnit.DAYS
 			
 		def graphTheta = new GraphTheta(thetaMap, width, height,
-			handler.totalInstructions, def gridMarks, 100)
+			handler.totalInstructions, gridMarks, 100)
 	}
 }
 

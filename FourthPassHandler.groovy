@@ -25,7 +25,6 @@ class FourthPassHandler extends DefaultHandler {
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
 		mapWS = new LinkedHashMap(128, 0.9, true)
-		
 	}
 	
 	void cleanWS()
@@ -33,7 +32,7 @@ class FourthPassHandler extends DefaultHandler {
 		def cut = instCount - theta
 		Iterator it = mapWS.entrySet().iterator()
 		while (it.hasNext()){
-			Map.Entry page = (Map.Entry)it.next()
+			Map.Entry page = (Map.Entry)it.next(); println page
 			if (page.getValue() < cut)
 				mapWS.remove(page.getKey())
 			else
