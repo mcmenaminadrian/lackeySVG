@@ -2,12 +2,12 @@ import groovy.xml.MarkupBuilder
 
 class GraphTheta {
 
-	GraphTheta(def ThetaMap, def width, def height, def totalInst, def gridMarks, def boostSize)
+	GraphTheta(def thetaMap, def width, def height, def totalInst, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"
-		ThetaMap.sort()
-		def gs = ThetaMap.keySet()
-		def thetas = ThetaMap.values()
+		thetaMap.sort()
+		def gs = thetaMap.keySet()
+		def thetas = thetaMap.values()
 		def maxG = gs.max()
 		def minG = gs.min()
 		def maxT = thetas.max()
