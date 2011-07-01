@@ -12,7 +12,7 @@ class GraphTheta {
 		def minG = gs.min()
 		def maxT = thetas.max()
 		def minT = thetas.min()
-		def rangeT = maxTheta - minTheta 
+		def rangeT = maxT - minT 
 		def rangeG = max - min
 		def gridMarks = 5
 		def writer = new FileWriter ("THETA${new Date().time.toString()}.svg")
