@@ -72,9 +72,9 @@ class GraphTheta {
 		svg.text(x:boostSize/4, y: height / 2,
 			transform:"rotate(270, ${boostSize/4}, ${height/2})",
 			style: "font-family: Helvetica; font-size:10; fill:red",
-			"Instructions between faults")
-		def strInst = "Working set: Size measured in maximum age "
-		strInst += " as measured in instructions ."
+			"Denning's g(theta)")
+		def strInst = "Average working set size"
+		strInst += " as measured in instructions."
 		svg.text(x:boostSize, y: height + boostSize * 1.5,
 				style: "font-family:Helvetica; font-size:10; fill:red",
 				strInst)
