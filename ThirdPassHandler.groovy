@@ -18,7 +18,7 @@ class ThirdPassHandler extends DefaultHandler {
 	def instCount = 0
 	def instLast = 0
 	def pageShift = 12
-	def boostSize = 100
+	def boostSize
 	def wsPoints = []
 	def maxWS = 0
 	def svg
@@ -27,7 +27,7 @@ class ThirdPassHandler extends DefaultHandler {
 	def range
 
 	ThirdPassHandler(def verb, def fPHandler, def wSetInst,
-		def width, def height, def gridMarks)
+		def width, def height, def gridMarks, def boost)
 	{
 		super()
 		this.verb = verb
@@ -36,6 +36,7 @@ class ThirdPassHandler extends DefaultHandler {
 		this.width = width
 		this.height = height
 		this.gridMarks = gridMarks
+		boostSize = boost
 		
 		//adjust instruct set size if needed
 		range = fPHandler.totalInstructions

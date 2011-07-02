@@ -30,14 +30,14 @@ class SecondPassHandler extends DefaultHandler {
 	def range
 	def travel = 0
 	def pageSize = 0
-	def boostSize = 100 //margins around the graph
+	def boostSize //margins around the graph
 	def gridMarks = 4
 	def biggest
 	FirstPassHandler fPH
 
 	SecondPassHandler(def verb, def handler, def width, def height,
 	def inst, def oFile, def percentile, def range, def pageSize,
-	def gridMarks) {
+	def gridMarks, def boost) {
 		super()
 		this.verb = verb
 		fPH = handler
@@ -49,6 +49,7 @@ class SecondPassHandler extends DefaultHandler {
 		this.pageSize = pageSize
 		this.range = range
 		this.gridMarks = gridMarks
+		boostSize = boost
 
 		writer = new FileWriter(oFile)
 		svg = new MarkupBuilder(writer)
