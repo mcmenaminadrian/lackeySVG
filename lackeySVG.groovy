@@ -74,7 +74,7 @@ class LackeySVGraph {
 				def saxReader = SAXParserFactory.newInstance().newSAXParser().XMLReader
 				saxReader.setContentHandler(handler4)
 				saxReader.parse(new InputSource(new FileInputStream(fPath)))
-				thetaMap[steps]=handler4.faults/steps
+				thetaMap[steps]=steps/handler4.faults
 			}
 			pool.submit(pass as Callable)
 		}

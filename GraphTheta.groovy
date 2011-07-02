@@ -54,7 +54,7 @@ class GraphTheta {
 			svg.text(x:boostSize - 60,
 				y: (int)(5 + height * i/gridMarks + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
-				(Long.toString((int)(rangeG * i/gridMarks + minG), 10)))
+				(Double.toString((int)(rangeG * i/gridMarks + minG), 10)))
 		}
 
 		def lastX = boostSize
