@@ -59,23 +59,34 @@ class LackeySVGraph {
 		def thetaMap = [:]
 		def stepTheta = (int) handler.totalInstructions/width
 		
+		def signalledClean = false
+		def cleanResult
+		
 		Closure stepClosure = {
-			def steps = it
-			
+			def steps = it	
 			Thread.start pass
 		}
+		
 		(stepTheta .. handler.totalInstructions).step(stepTheta){
 			def steps = it
 			Closure pass = {
 				if (verb)
 					println "Setting theta to $steps"
+				
 				def handler4 = new FourthPassHandler(handler, steps, 12)
 				def saxReader = SAXParserFactory.newInstance().newSAXParser().XMLReader
 				saxReader.setContentHandler(handler4)
 				saxReader.parse(new InputSource(new FileInputStream(fPath)))
 				thetaMap[steps] = handler.totalInstructions / handler4.faults
+				if (!handler4.purged) { //no page replacement required
+					cleanResult = thetaMap[steps]
+					signalledClean = true
+				}
 			}
-			pool.submit(pass as Callable)
+			if (!signalledClean)
+				pool.submit(pass as Callable)
+			else
+				thetaMap[steps] = cleanResult
 		}
 		pool.shutdown()
 		pool.awaitTermination 5, TimeUnit.DAYS
