@@ -5,15 +5,12 @@ class GraphTheta {
 	GraphTheta(def thetaMap, def width, def height, def totalInst, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"
-		thetaMap.sort()
 		def thetas = thetaMap.keySet()
 		def gs = thetaMap.values()
-		def minG = gs.min()
 		def maxG = gs.max()
 		def maxT = thetas.max()
-		def minT = thetas.min()
-		def rangeT = maxT - minT 
-		def rangeG = maxG - minG
+		def rangeT = maxT 
+		def rangeG = maxG
 		def writer = new FileWriter ("THETA${new Date().time.toString()}.svg")
 		def svg = new MarkupBuilder(writer)
 		//header etc
@@ -43,7 +40,7 @@ class GraphTheta {
 			svg.text(x:(int)(boostSize - 5 + width * i/gridMarks),
 				y:20 + height + boostSize,
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
-				((int) rangeT * i / gridMarks + minT))
+				((int) rangeT * i / gridMarks))
 
 			svg.line(x1:boostSize - 20,
 				y1:(int)(height * i/gridMarks + boostSize),
@@ -60,12 +57,13 @@ class GraphTheta {
 		def lastX = boostSize
 		def lastY = boostSize + height
 		def yFact = height/rangeG
-		thetaMap.eachWithIndex {key, val, i ->
-			def yPoint = boostSize + (int) (height - ((val - minG) * yFact))
+		def xFact = width/rangeT
+		thetaMap.each{key, val ->
+			def yPoint = boostSize + (int) (height - val * yFact)
 			svg.line(x1: lastX, y1: lastY,
-				x2:i + 1 + boostSize, y2:yPoint,
+				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,
 				style:"fill:none; stroke:red; stroke-width:1;")
-			lastX = i + 1 + boostSize
+			lastX = key * xFact + 1 + boostSize
 			lastY = yPoint;
 		}
 		svg.text(x:boostSize/4, y: height / 2,

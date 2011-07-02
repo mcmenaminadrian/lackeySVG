@@ -56,7 +56,7 @@ class LackeySVGraph {
 		pool.submit(memClosure as Callable)
 		pool.submit(wsClosure as Callable)
 
-		def thetaMap = [:]
+		def thetaMap = Collections.synchronizedSortedMap(new TreeMap())
 		def stepTheta = (int) handler.totalInstructions/width
 		
 		def signalledClean = false
