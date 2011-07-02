@@ -59,9 +59,9 @@ class GraphTheta {
 
 		def lastX = boostSize
 		def lastY = boostSize + height
-		def yFact = height/maxG
+		def yFact = height/rangeG
 		thetaMap.eachWithIndex {key, val, i ->
-			def yPoint = boostSize + (int) (height - (1 / val) * yFact)
+			def yPoint = boostSize + (int) (height - ((val - minG) * yFact))
 			svg.line(x1: lastX, y1: lastY,
 				x2:i + 1 + boostSize, y2:yPoint,
 				style:"fill:none; stroke:red; stroke-width:1;")

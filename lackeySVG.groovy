@@ -68,12 +68,13 @@ class LackeySVGraph {
 		(stepTheta .. handler.totalInstructions).step(stepTheta){
 			def steps = it
 			Closure pass = {
-				println "steps is $steps"
+				if (verb)
+					println "Setting theta to $steps"
 				def handler4 = new FourthPassHandler(handler, steps, 12)
 				def saxReader = SAXParserFactory.newInstance().newSAXParser().XMLReader
 				saxReader.setContentHandler(handler4)
 				saxReader.parse(new InputSource(new FileInputStream(fPath)))
-				thetaMap[steps]=steps/handler4.faults
+				thetaMap[steps]=handler4.faults/steps
 			}
 			pool.submit(pass as Callable)
 		}
