@@ -13,7 +13,7 @@ class GraphCompTheta {
 		def maxT = thetas.max()
 		def rangeT = maxT
 		def rangeG = maxG
-		def writer = new FileWriter ("THETA${new Date().time.toString()}.svg")
+		def writer = new FileWriter ("CMPTHETA${new Date().time.toString()}.svg")
 		def svg = new MarkupBuilder(writer)
 		//header etc
 		def cWidth = width + 2 * boostSize
