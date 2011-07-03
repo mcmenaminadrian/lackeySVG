@@ -14,11 +14,14 @@ class FirstPassHandler extends DefaultHandler {
 	def maxSize = 0
 	def verb
 	def command
+	def pageMap = [:]
+	def pageShift
 	
-	FirstPassHandler(def verb)
+	FirstPassHandler(def verb, def pageShift = 12)
 	{
 		super()
 		this.verb = verb
+		this.pageShift = pageShift
 	}
 	
 	void printout(def str)
@@ -51,6 +54,8 @@ class FirstPassHandler extends DefaultHandler {
 				maxInstructionAddr = address + siz
 			totalInstructions += siz
 			printout "Instruction at $address of size $siz"
+			def pgAddr = address >> pageShift
+			pageMap[pgAddr] = true 
 			break
 				
 			case 'modify':
@@ -65,6 +70,8 @@ class FirstPassHandler extends DefaultHandler {
 			if (address + siz > maxHeapAddr)
 				maxHeapAddr = address + siz
 			printout "$qName at $address of size $siz"
+			def pgAddr = address >> pageShift
+			pageMap[pgAddr] = true
 			break
 				
 			default:

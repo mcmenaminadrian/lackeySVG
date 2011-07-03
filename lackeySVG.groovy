@@ -19,7 +19,7 @@ class LackeySVGraph {
 		def thetaLRUMap
 		def thetaMap
 		println "Opening $fPath"
-		def handler = new FirstPassHandler(verb)
+		def handler = new FirstPassHandler(verb, pageSize)
 		def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
 		reader.setContentHandler(handler)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
@@ -38,9 +38,10 @@ class LackeySVGraph {
 			println "Using page size granularity of ${2**pageSize} bytes"
 		if (percentile)
 			println "Starting from $percentile with range $range%"
-
+		def maxPg = handler.pageMap.size()
+		println "Total pages referrenced $maxPg"
 		def pool = Executors.newFixedThreadPool(threads)
-		def maxWS
+
 			
 		def memClosure = {
 			def handler2 = new SecondPassHandler(verb, handler, width, height,
@@ -71,11 +72,7 @@ class LackeySVGraph {
 
 		if (PLOTS & LIFEPLOT) {
 			thetaMap = Collections.synchronizedSortedMap(new TreeMap())
-			def stepTheta = (int) handler.totalInstructions/width
-		
-			def signalledClean = false
-			def cleanResult
-		
+			def stepTheta = (int) handler.totalInstructions/width	
 			(stepTheta .. handler.totalInstructions).step(stepTheta){
 				def steps = it
 				Closure pass = {
@@ -90,28 +87,18 @@ class LackeySVGraph {
 							new InputSource(new FileInputStream(fPath)))
 						thetaMap[steps] = (int)(handler.totalInstructions /
 							handler4.faults)
-						if (handler4.purged == false) {
-							//no page replacement required
-							cleanResult = thetaMap[steps]
-							signalledClean = true
-						}
+
 				}
-				if (signalledClean == false)
-					pool.submit(pass as Callable)
-				else
-					thetaMap[steps] = cleanResult
+				pool.submit(pass as Callable)
 			}
-
 		}
-		pool.shutdown()
-		pool.awaitTermination( 5, TimeUnit.DAYS)
-
-		def pool2 = Executors.newFixedThreadPool(threads)
 		if (PLOTS & LRUPLOT) {
 			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap());
-			def memTheta = (int) maxWS/width
-			println "Maximum WSS is $maxWS, using steps of $memTheta"
-			(memTheta .. maxWS).step(memTheta){
+			def memTheta = (int) maxPg/width
+			if (memTheta == 0)
+				memTheta = 1
+			println "Maximum WSS is $maxPg, using steps of $memTheta"
+			(memTheta .. maxPg).step(memTheta){
 				def mem = it
 				Closure pass = {
 					if (verb)
