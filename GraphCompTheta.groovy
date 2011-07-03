@@ -1,18 +1,19 @@
+
 import groovy.xml.MarkupBuilder
 
-class GraphLRUTheta {
+class GraphCompTheta {
 
-	GraphLRUTheta(def thetaLRUMap, def width, def height, def gridMarks,
-		def boostSize)
+	GraphTheta(def thetaMap, def thetaLRUMap 
+		def width, def height, def gridMarks, def boostSize)
 	{
-		println "Drawing WS lifetime function"
-		def thetas = thetaLRUMap.keySet()
-		def gs = thetaLRUMap.values()
+		println "Drawing lifetime function"
+		def thetas = thetaMap.keySet()
+		def gs = thetaMap.values()
 		def maxG = gs.max()
 		def maxT = thetas.max()
-		def rangeT = maxT 
+		def rangeT = maxT
 		def rangeG = maxG
-		def writer = new FileWriter ("LRUTHETA${new Date().time.toString()}.svg")
+		def writer = new FileWriter ("THETA${new Date().time.toString()}.svg")
 		def svg = new MarkupBuilder(writer)
 		//header etc
 		def cWidth = width + 2 * boostSize
@@ -60,6 +61,21 @@ class GraphLRUTheta {
 		def lastX = boostSize
 		//initial distance between faults is 1
 		def lastY = boostSize + (height - yFact)
+		thetaMap.each{key, val ->
+			def yPoint = boostSize + (int) (height - val * yFact)
+			svg.line(x1: lastX, y1: lastY,
+				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,
+				style:"fill:none; stroke:red; stroke-width:1;")
+			lastX = (int)(key * xFact + 1 + boostSize)
+			lastY = yPoint;
+		}
+		
+		lastX = boostSize
+		lastY = boostSize + (height - yFact)
+		thetas = thetaLRUMap.keySet()
+		maxT = thetas.max()
+		rangeT = maxT
+		xFact = width/rangeT
 		thetaLRUMap.each{key, val ->
 			def yPoint = boostSize + (int) (height - val * yFact)
 			svg.line(x1: lastX, y1: lastY,
@@ -68,16 +84,19 @@ class GraphLRUTheta {
 			lastX = (int)(key * xFact + 1 + boostSize)
 			lastY = yPoint;
 		}
+		
 		svg.text(x:boostSize/4, y: height / 2,
 			transform:"rotate(270, ${boostSize/4}, ${height/2})",
 			style: "font-family: Helvetica; font-size:10; fill:red",
 			"Denning's g(theta)")
-		def strInst = "Maximum working set size"
+		def strInst = "Average working set size"
+		strInst += " as measured in instructions."
 		svg.text(x:boostSize, y: height + boostSize * 1.5,
 				style: "font-family:Helvetica; font-size:10; fill:red",
 				strInst)
 		writer.write("\n</svg>")
 		writer.close()
 	
-	} 
+	}
 }
+

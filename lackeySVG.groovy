@@ -77,17 +77,17 @@ class LackeySVGraph {
 			(stepTheta .. handler.totalInstructions).step(stepTheta){
 				def steps = it
 				Closure passWS = {
-					//if (verb)
+					if (verb)
 						println "Setting theta to $steps"
-						def handler4 = new FourthPassHandler(handler, steps,
-							12)
-						def saxReader =
+					def handler4 = new FourthPassHandler(handler, steps,
+						12)
+					def saxReader =
 						SAXParserFactory.newInstance().newSAXParser().XMLReader
-						saxReader.setContentHandler(handler4)
-						saxReader.parse(
-							new InputSource(new FileInputStream(fPath)))
-						thetaMap[steps] = (int)(handler.totalInstructions /
-							handler4.faults)
+					saxReader.setContentHandler(handler4)
+					saxReader.parse(
+						new InputSource(new FileInputStream(fPath)))
+					thetaMap[steps] = (int)(handler.totalInstructions /
+						handler4.faults)
 
 				}
 				pool.submit(passWS as Callable)
@@ -126,6 +126,9 @@ class LackeySVGraph {
 		if (PLOTS & LRUPLOT)
 			def graphLRUTheta = new GraphLRUTheta(thetaLRUMap, width, height,
 				gridMarks, boost)
+		if ((PLOTS & LRUPLOT) && (PLOTS & LIFEPLOT))
+			def graphCompTheta = new GraphCompTheta(thetaMap, thetaLRUMap, 
+				width, height, gridMarks, boost)
 	}
 }
 
