@@ -1,8 +1,8 @@
 import groovy.xml.MarkupBuilder
 
-class GraphTheta {
+class GraphLRUTheta {
 
-	GraphTheta(def thetaMap, def width, def height, def gridMarks, def boostSize)
+	GraphLRUTheta(def thetaMap, def width, def height, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"
 		def thetas = thetaMap.keySet()
@@ -63,7 +63,7 @@ class GraphTheta {
 			def yPoint = boostSize + (int) (height - val * yFact)
 			svg.line(x1: lastX, y1: lastY,
 				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,
-				style:"fill:none; stroke:red; stroke-width:1;")
+				style:"fill:none; stroke:blue; stroke-width:1;")
 			lastX = (int)(key * xFact + 1 + boostSize)
 			lastY = yPoint;
 		}
@@ -71,8 +71,7 @@ class GraphTheta {
 			transform:"rotate(270, ${boostSize/4}, ${height/2})",
 			style: "font-family: Helvetica; font-size:10; fill:red",
 			"Denning's g(theta)")
-		def strInst = "Average working set size"
-		strInst += " as measured in instructions."
+		def strInst = "Maximum working set size"
 		svg.text(x:boostSize, y: height + boostSize * 1.5,
 				style: "font-family:Helvetica; font-size:10; fill:red",
 				strInst)

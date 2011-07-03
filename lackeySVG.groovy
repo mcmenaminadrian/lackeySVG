@@ -9,6 +9,7 @@ class LackeySVGraph {
 	def MEMPLOT = 0x01
 	def WSPLOT = 0x02
 	def LIFEPLOT = 0x04
+	def LRUPLOT = 0x08
 	
 
 	LackeySVGraph(def width, def height, def inst, def fPath, def verb,
@@ -37,10 +38,11 @@ class LackeySVGraph {
 			println "Starting from $percentile with range $range%"
 
 		def pool = Executors.newFixedThreadPool(threads)
-		
+		def handler2
+		def handler3
 			
 		def memClosure = {
-			def handler2 = new SecondPassHandler(verb, handler, width, height,
+			handler2 = new SecondPassHandler(verb, handler, width, height,
 			inst, oF, percentile, range, pageSize, gridMarks, boost)
 			def saxReader = SAXParserFactory.newInstance().
 				newSAXParser().XMLReader	
@@ -50,7 +52,7 @@ class LackeySVGraph {
 		}
 		
 		def wsClosure = {
-			def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
+			handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
 				width, height, gridMarks, boost)
 			def saxReader = SAXParserFactory.newInstance().
 				newSAXParser().XMLReader
@@ -67,11 +69,6 @@ class LackeySVGraph {
 		
 			def signalledClean = false
 			def cleanResult
-		
-			Closure stepClosure = {
-				def steps = it	
-				Thread.start pass
-			}
 		
 			(stepTheta .. handler.totalInstructions).step(stepTheta){
 				def steps = it
@@ -103,7 +100,37 @@ class LackeySVGraph {
 			pool.awaitTermination 5, TimeUnit.DAYS
 			
 			def graphTheta = new GraphTheta(thetaMap, width, height,
-				handler.totalInstructions, gridMarks, boost)
+				gridMarks, boost)
+		}
+		
+		if (PLOTS & LRUPLOT) {
+			def thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap())
+			def memTheta = (int) handler3.maxWS/width
+		
+			(memTheta .. handler3.maxWS).step(memTheta){
+				def mem = it
+				Closure pass = {
+					if (verb)
+						println "Setting LRU theta to $mem"
+				
+					def handler5 = new FifthPassHandler(handler, mem,
+						12)
+					def saxReader =
+						SAXParserFactory.newInstance().newSAXParser().XMLReader
+					saxReader.setContentHandler(handler5)
+					saxReader.parse(
+						new InputSource(new FileInputStream(fPath)))
+					thetaMap[mem] = (int)(handler.totalInstructions /
+						handler5.faults)
+
+					pool.submit(pass as Callable)
+				}
+			}
+			pool.shutdown()
+			pool.awaitTermination 5, TimeUnit.DAYS
+			
+			def graphTheta = new GraphLRUTheta(thetaMap, width, height,
+				 gridMarks, boost) 
 		}
 	}
 }
@@ -127,7 +154,8 @@ svgCli.t(longOpt:'threadpool', args: 1, 'size of thread pool (default 3)')
 svgCli.b(longOpt:'margins', args: 1, 'margin size on graphs (default 100px)')
 svgCli.xm(longOpt:'nomemplot', 'do not plot memory use')
 svgCli.xw(longOpt:'nowsplot', 'do not plot working set')
-svgCli.xl(longOpt:'nolifeplot', 'do not plot life time curve')
+svgCli.xl(longOpt:'nolifeplot', 'do not plot ws life time curve')
+svgCli.xr(longOpt:'nolruplot', 'do not plot lru life time curve')
 
 def oAss = svgCli.parse(args)
 if (oAss.u || args.size() == 0) {
@@ -189,6 +217,10 @@ else {
 		PLOTS = PLOTS ^ 0x02
 	if (oAss.xl)
 		PLOTS = PLOTS ^ 0x04
+	if (oAss.xr)
+		PLOTS = PLOTS ^ 0x08
+	else
+		PLOTS = PLOTS|0x02 //have to have this information to plot lru curve
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
 			verb, oFile, percentile, range, pageSize, gridMarks, wSSize,

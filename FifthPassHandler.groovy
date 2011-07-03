@@ -6,7 +6,7 @@ import org.xml.sax.helpers.DefaultHandler
 import org.xml.sax.*
 import groovy.xml.MarkupBuilder
 
-class FourthPassHandler extends DefaultHandler {
+class FifthPassHandler extends DefaultHandler {
 
 	def theta
 	def faults = 0
@@ -18,7 +18,7 @@ class FourthPassHandler extends DefaultHandler {
 	def pageShift
 	def purged
 	
-	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
+	FifthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
 		this.firstPassHandler = firstPassHandler
 		this.theta = theta
@@ -32,18 +32,9 @@ class FourthPassHandler extends DefaultHandler {
 	
 	void cleanWS()
 	{
-		def cut = instCount - theta
+		//simply chop the oldest page
 		Iterator it = mapWS.entrySet().iterator()
-		while (it.hasNext()){
-			Map.Entry page = (Map.Entry)it.next(); 
-			nextCount = page.getValue()
-			if (nextCount < cut) {
-				it.remove()
-				purged = true
-			}
-			else 
-				break
-		}
+		it.remove()
 	}
 	
 	void startElement(String ns, String localName, String qName,
@@ -60,7 +51,7 @@ class FourthPassHandler extends DefaultHandler {
 			
 			mapWS[address] = instCount
 
-			if (instCount > theta && instCount >= nextCount)
+			if (mapWS.size() > theta)
 				cleanWS()
 			break
 			
@@ -71,13 +62,15 @@ class FourthPassHandler extends DefaultHandler {
 			if (!mapWS[address])
 				faults++
 			mapWS[address] = instCount
+			if (mapWS.size() > theta)
+				cleanWS()
 			break
 		}
 	}
 		
 	void endDocument()
 	{
-		println "Run for theta of $theta instructions completed:"
+		println "Run for theta of $theta size working set completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
 	}
 	
