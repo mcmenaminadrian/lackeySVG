@@ -54,7 +54,7 @@ class FirstPassHandler extends DefaultHandler {
 				maxInstructionAddr = address + siz
 			totalInstructions += siz
 			printout "Instruction at $address of size $siz"
-			def pgAddr = address >> pageShift
+			def pgAddr = ((Long) address) >> pageShift
 			pageMap[pgAddr] = true 
 			break
 				
@@ -70,7 +70,7 @@ class FirstPassHandler extends DefaultHandler {
 			if (address + siz > maxHeapAddr)
 				maxHeapAddr = address + siz
 			printout "$qName at $address of size $siz"
-			def pgAddr = address >> pageShift
+			def pgAddr = ((Long) address) >> pageShift
 			pageMap[pgAddr] = true
 			break
 				
