@@ -16,7 +16,7 @@ class FourthPassHandler extends DefaultHandler {
 	def instCount = 0
 	def nextCount = 0
 	def pageShift
-	def purged = false
+	def purged
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
@@ -27,6 +27,7 @@ class FourthPassHandler extends DefaultHandler {
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
 		mapWS = new LinkedHashMap(256, 0.7, true)
+		purged = false
 	}
 	
 	void cleanWS()

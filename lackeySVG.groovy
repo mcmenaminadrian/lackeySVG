@@ -74,10 +74,12 @@ class LackeySVGraph {
 					println "Setting theta to $steps"
 				
 				def handler4 = new FourthPassHandler(handler, steps, 12)
-				def saxReader = SAXParserFactory.newInstance().newSAXParser().XMLReader
+				def saxReader =
+					SAXParserFactory.newInstance().newSAXParser().XMLReader
 				saxReader.setContentHandler(handler4)
 				saxReader.parse(new InputSource(new FileInputStream(fPath)))
-				thetaMap[steps] = handler.totalInstructions / handler4.faults
+				thetaMap[steps] = (int)(handler.totalInstructions /
+					handler4.faults)
 				if (!handler4.purged) { //no page replacement required
 					cleanResult = thetaMap[steps]
 					signalledClean = true

@@ -63,7 +63,7 @@ class GraphTheta {
 			svg.line(x1: lastX, y1: lastY,
 				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,
 				style:"fill:none; stroke:red; stroke-width:1;")
-			lastX = key * xFact + 1 + boostSize
+			lastX = (int)(key * xFact + 1 + boostSize)
 			lastY = yPoint;
 		}
 		svg.text(x:boostSize/4, y: height / 2,
