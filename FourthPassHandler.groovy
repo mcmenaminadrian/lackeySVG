@@ -16,6 +16,7 @@ class FourthPassHandler extends DefaultHandler {
 	def instCount = 0
 	def nextCount = 0
 	def pageShift
+	def sizes = []
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
@@ -58,6 +59,7 @@ class FourthPassHandler extends DefaultHandler {
 
 			if (instCount > theta && instCount >= nextCount)
 				cleanWS()
+			sizes << mapWS.size()
 			break
 			
 			case 'store':
@@ -75,6 +77,9 @@ class FourthPassHandler extends DefaultHandler {
 	{
 		println "Run for theta of $theta instructions completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
+		def avSize = sizes.sum()/sizes.size()
+		println "Average working set size was $avSize"
+		println ""
 	}
 	
 }

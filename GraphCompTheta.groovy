@@ -3,12 +3,12 @@ import groovy.xml.MarkupBuilder
 
 class GraphCompTheta {
 
-	GraphCompTheta(def thetaMap, def thetaLRUMap, 
+	GraphCompTheta(def thetaAveMap, def thetaLRUMap, 
 		def width, def height, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"
-		def thetas = thetaMap.keySet()
-		def gs = thetaMap.values()
+		def thetas = thetaAveMap.keySet()
+		def gs = thetaAveMap.values()
 		def maxG = gs.max()
 		def maxT = thetas.max()
 		def rangeT = maxT
@@ -61,7 +61,7 @@ class GraphCompTheta {
 		def lastX = boostSize
 		//initial distance between faults is 1
 		def lastY = boostSize + (height - yFact)
-		thetaMap.each{key, val ->
+		thetaAveMap.each{key, val ->
 			def yPoint = boostSize + (int) (height - val * yFact)
 			svg.line(x1: lastX, y1: lastY,
 				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,
@@ -89,8 +89,7 @@ class GraphCompTheta {
 			transform:"rotate(270, ${boostSize/4}, ${height/2})",
 			style: "font-family: Helvetica; font-size:10; fill:red",
 			"Denning's g(theta)")
-		def strInst = "Average working set size"
-		strInst += " as measured in instructions."
+		def strInst = "(Average - red) Working set size"
 		svg.text(x:boostSize, y: height + boostSize * 1.5,
 				style: "font-family:Helvetica; font-size:10; fill:red",
 				strInst)

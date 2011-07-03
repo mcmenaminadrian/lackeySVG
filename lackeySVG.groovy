@@ -18,6 +18,7 @@ class LackeySVGraph {
 	{
 		def thetaLRUMap
 		def thetaMap
+		def thetaAveMap
 		println "Opening $fPath"
 		def handler = new FirstPassHandler(verb, pageSize)
 		def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
@@ -73,6 +74,7 @@ class LackeySVGraph {
 		if (PLOTS & LIFEPLOT) {
 			println "Plotting life with variable WSS"
 			thetaMap = Collections.synchronizedSortedMap(new TreeMap())
+			thetaAveMap = Collections.synchronizeSortedMap(new TreeMap())
 			def stepTheta = (int) handler.totalInstructions/width	
 			(stepTheta .. handler.totalInstructions).step(stepTheta){
 				def steps = it
@@ -86,8 +88,11 @@ class LackeySVGraph {
 					saxReader.setContentHandler(handler4)
 					saxReader.parse(
 						new InputSource(new FileInputStream(fPath)))
-					thetaMap[steps] = (int)(handler.totalInstructions /
+					def g = (int)(handler.totalInstructions /
 						handler4.faults)
+					thetaMap[steps] = g
+					def avgWSS = (int) handler4.sizes.sum()/handler4.sizes.size()
+					thetaAveMap[avgWSS] = g 
 
 				}
 				pool.submit(passWS as Callable)
@@ -127,7 +132,7 @@ class LackeySVGraph {
 			def graphLRUTheta = new GraphLRUTheta(thetaLRUMap, width, height,
 				gridMarks, boost)
 		if ((PLOTS & LRUPLOT) && (PLOTS & LIFEPLOT))
-			def graphCompTheta = new GraphCompTheta(thetaMap, thetaLRUMap, 
+			def graphCompTheta = new GraphCompTheta(thetaAveMap, thetaLRUMap, 
 				width, height, gridMarks, boost)
 	}
 }
