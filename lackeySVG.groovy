@@ -40,27 +40,27 @@ class LackeySVGraph {
 			println "Starting from $percentile with range $range%"
 
 		def pool = Executors.newFixedThreadPool(threads)
-		def handler2
 		def maxWS
 			
 		def memClosure = {
-			handler2 = new SecondPassHandler(verb, handler, width, height,
+			def handler2 = new SecondPassHandler(verb, handler, width, height,
 			inst, oF, percentile, range, pageSize, gridMarks, boost)
 			def saxReader = SAXParserFactory.newInstance().
 				newSAXParser().XMLReader	
 			saxReader.setContentHandler(handler2)
 			saxReader.parse(new InputSource(new FileInputStream(fPath)))
-			println "Second pass complete"
+			println "Memory use mapping complete"
 		}
 		
 		def wsClosure = {
-			handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
+			def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
 				width, height, gridMarks, boost)
 			def saxReader = SAXParserFactory.newInstance().
 				newSAXParser().XMLReader
 			saxReader.setContentHandler(handler3)
 			saxReader.parse(new InputSource(new FileInputStream(fPath)))
 			maxWS = handler3.maxWS
+			println "Working set mapping complete"
 	
 		}
 		
@@ -81,7 +81,6 @@ class LackeySVGraph {
 				Closure pass = {
 					if (verb)
 						println "Setting theta to $steps"
-				
 						def handler4 = new FourthPassHandler(handler, steps,
 							12)
 						def saxReader =
@@ -105,24 +104,18 @@ class LackeySVGraph {
 
 		}
 		pool.shutdown()
-		try {
-			def at = pool.awaitTermination( 5, TimeUnit.DAYS)
-			println "awaited - $at"
-		}
-		catch(def e){
-			println "eeek: $e"
-		}
+		pool.awaitTermination( 5, TimeUnit.DAYS)
+
 		def pool2 = Executors.newFixedThreadPool(threads)
 		if (PLOTS & LRUPLOT) {
-			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap()); println "maxWS is $maxWS"
+			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap());
 			def memTheta = (int) maxWS/width
-			println "memTheta is $memTheta maxWS is $maxWS"
+			println "Maximum WSS is $maxWS, using steps of $memTheta"
 			(memTheta .. maxWS).step(memTheta){
 				def mem = it
 				Closure pass = {
-					//if (verb)
+					if (verb)
 						println "Setting LRU theta to $mem"
-				
 					def handler5 = new FifthPassHandler(handler, mem,
 						12)
 					def saxLRUReader = SAXParserFactory.newInstance().
@@ -136,7 +129,6 @@ class LackeySVGraph {
 				pool2.submit(pass as Callable)
 			}
 		}
-		
 		pool2.shutdown()
 		pool2.awaitTermination 5, TimeUnit.DAYS
 		

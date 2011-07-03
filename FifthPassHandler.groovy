@@ -16,7 +16,6 @@ class FifthPassHandler extends DefaultHandler {
 	def instCount = 0
 	def nextCount = 0
 	def pageShift
-	def purged
 	
 	FifthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
@@ -27,14 +26,17 @@ class FifthPassHandler extends DefaultHandler {
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
 		mapWS = new LinkedHashMap(128, 0.7, true)
-		purged = false
+		println "THETA: $theta TOTAL INSTRUCTIONS $totalInstructions"
 	}
 	
 	void cleanWS()
 	{
-		//simply chop the oldest page
+		//simply chop the LRU page
 		Iterator it = mapWS.entrySet().iterator()
-		it.remove()
+		if (it.hasNext()) {
+			it.next()
+			it.remove()
+		}
 	}
 	
 	void startElement(String ns, String localName, String qName,
@@ -48,9 +50,7 @@ class FifthPassHandler extends DefaultHandler {
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
 			if (!mapWS[address]) 
 				faults++
-			
 			mapWS[address] = instCount
-
 			if (mapWS.size() > theta)
 				cleanWS()
 			break
