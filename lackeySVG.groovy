@@ -74,7 +74,7 @@ class LackeySVGraph {
 		if (PLOTS & LIFEPLOT) {
 			println "Plotting life with variable WSS"
 			thetaMap = Collections.synchronizedSortedMap(new TreeMap())
-			thetaAveMap = Collections.synchronizeSortedMap(new TreeMap())
+			thetaAveMap = Collections.synchronizedSortedMap(new TreeMap())
 			def stepTheta = (int) handler.totalInstructions/width	
 			(stepTheta .. handler.totalInstructions).step(stepTheta){
 				def steps = it
