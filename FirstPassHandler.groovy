@@ -17,11 +17,15 @@ class FirstPassHandler extends DefaultHandler {
 	def pageMap = [:]
 	def pageShift
 	
-	FirstPassHandler(def verb, def pageShift = 12)
+	FirstPassHandler(def verb, def pageShift)
 	{
 		super()
 		this.verb = verb
-		this.pageShift = pageShift
+		if (pageShift < 1)
+			this.pageShift = 12
+		else
+			this.pageShift = pageShift
+
 	}
 	
 	void printout(def str)
@@ -55,7 +59,7 @@ class FirstPassHandler extends DefaultHandler {
 			totalInstructions += siz
 			printout "Instruction at $address of size $siz"
 			def pgAddr = ((Long) address) >> pageShift
-			pageMap[pgAddr] = true 
+			pageMap[pgAddr] = true
 			break
 				
 			case 'modify':

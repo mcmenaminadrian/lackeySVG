@@ -38,7 +38,7 @@ class LackeySVGraph {
 			println "Using page size granularity of ${2**pageSize} bytes"
 		if (percentile)
 			println "Starting from $percentile with range $range%"
-		def maxPg = handler.pageMap.size()
+		def maxPg = (handler.pageMap).size()
 		println "Total pages referrenced $maxPg"
 		def pool = Executors.newFixedThreadPool(threads)
 
@@ -75,7 +75,7 @@ class LackeySVGraph {
 			def stepTheta = (int) handler.totalInstructions/width	
 			(stepTheta .. handler.totalInstructions).step(stepTheta){
 				def steps = it
-				Closure pass = {
+				Closure passWS = {
 					if (verb)
 						println "Setting theta to $steps"
 						def handler4 = new FourthPassHandler(handler, steps,
@@ -89,7 +89,7 @@ class LackeySVGraph {
 							handler4.faults)
 
 				}
-				pool.submit(pass as Callable)
+				pool.submit(passWS as Callable)
 			}
 		}
 		if (PLOTS & LRUPLOT) {
@@ -97,10 +97,9 @@ class LackeySVGraph {
 			def memTheta = (int) maxPg/width
 			if (memTheta == 0)
 				memTheta = 1
-			println "Maximum WSS is $maxPg, using steps of $memTheta"
 			(memTheta .. maxPg).step(memTheta){
 				def mem = it
-				Closure pass = {
+				Closure passLRU = {
 					if (verb)
 						println "Setting LRU theta to $mem"
 					def handler5 = new FifthPassHandler(handler, mem,
@@ -113,11 +112,12 @@ class LackeySVGraph {
 					thetaLRUMap[mem] = (int)(handler.totalInstructions /
 						handler5.faults)
 				}
-				pool2.submit(pass as Callable)
+				pool.submit(passLRU as Callable)
 			}
 		}
-		pool2.shutdown()
-		pool2.awaitTermination 5, TimeUnit.DAYS
+		
+		pool.shutdown()
+		pool.awaitTermination 5, TimeUnit.DAYS
 		
 		if (PLOTS & LIFEPLOT) 
 			def graphTheta = new GraphTheta(thetaMap, width, height,

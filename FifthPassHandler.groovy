@@ -26,7 +26,6 @@ class FifthPassHandler extends DefaultHandler {
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
 		mapWS = new LinkedHashMap(128, 0.7, true)
-		println "THETA: $theta TOTAL INSTRUCTIONS $totalInstructions"
 	}
 	
 	void cleanWS()
