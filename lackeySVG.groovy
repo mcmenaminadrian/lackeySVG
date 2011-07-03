@@ -71,12 +71,13 @@ class LackeySVGraph {
 			pool.submit(wsClosure as Callable)
 
 		if (PLOTS & LIFEPLOT) {
+			println "Plotting life with variable WSS"
 			thetaMap = Collections.synchronizedSortedMap(new TreeMap())
 			def stepTheta = (int) handler.totalInstructions/width	
 			(stepTheta .. handler.totalInstructions).step(stepTheta){
 				def steps = it
 				Closure passWS = {
-					if (verb)
+					//if (verb)
 						println "Setting theta to $steps"
 						def handler4 = new FourthPassHandler(handler, steps,
 							12)

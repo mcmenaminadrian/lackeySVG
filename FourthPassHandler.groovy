@@ -26,7 +26,6 @@ class FourthPassHandler extends DefaultHandler {
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
 		mapWS = new LinkedHashMap(128, 0.7, true)
-		purged = false
 	}
 	
 	void cleanWS()
