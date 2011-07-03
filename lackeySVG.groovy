@@ -91,7 +91,7 @@ class LackeySVGraph {
 					def g = (int)(handler.totalInstructions /
 						handler4.faults)
 					thetaMap[steps] = g
-					def avgWSS = (int) handler4.sizes.sum()/handler4.sizes.size()
+					def avgWSS = handler4.sizes.sum()/handler4.sizes.size()
 					thetaAveMap[avgWSS] = g 
 
 				}
