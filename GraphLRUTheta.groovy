@@ -2,16 +2,16 @@ import groovy.xml.MarkupBuilder
 
 class GraphLRUTheta {
 
-	GraphLRUTheta(def thetaMap, def width, def height, def gridMarks, def boostSize)
+	GraphLRUTheta(def thetaLRUMap, def width, def height, def gridMarks, def boostSize)
 	{
-		println "Drawing lifetime function"
-		def thetas = thetaMap.keySet()
-		def gs = thetaMap.values()
+		println "Drawing WS lifetime function"
+		def thetas = thetaLRUMap.keySet()
+		def gs = thetaLRUMap.values()
 		def maxG = gs.max()
 		def maxT = thetas.max()
 		def rangeT = maxT 
 		def rangeG = maxG
-		def writer = new FileWriter ("THETA${new Date().time.toString()}.svg")
+		def writer = new FileWriter ("LRUTHETA${new Date().time.toString()}.svg")
 		def svg = new MarkupBuilder(writer)
 		//header etc
 		def cWidth = width + 2 * boostSize
@@ -59,7 +59,7 @@ class GraphLRUTheta {
 		def lastX = boostSize
 		//initial distance between faults is 1
 		def lastY = boostSize + (height - yFact)
-		thetaMap.each{key, val ->
+		thetaLRUMap.each{key, val ->
 			def yPoint = boostSize + (int) (height - val * yFact)
 			svg.line(x1: lastX, y1: lastY,
 				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,

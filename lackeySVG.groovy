@@ -16,6 +16,8 @@ class LackeySVGraph {
 		def oF, def percentile, def range, def pageSize, def gridMarks,
 		def workingSetInst, def threads, def boost, def PLOTS)
 	{
+		def thetaLRUMap
+		def thetaMap
 		println "Opening $fPath"
 		def handler = new FirstPassHandler(verb)
 		def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
@@ -39,7 +41,7 @@ class LackeySVGraph {
 
 		def pool = Executors.newFixedThreadPool(threads)
 		def handler2
-		def handler3
+		def maxWS
 			
 		def memClosure = {
 			handler2 = new SecondPassHandler(verb, handler, width, height,
@@ -58,13 +60,17 @@ class LackeySVGraph {
 				newSAXParser().XMLReader
 			saxReader.setContentHandler(handler3)
 			saxReader.parse(new InputSource(new FileInputStream(fPath)))
+			maxWS = handler3.maxWS
+	
 		}
 		
-		if (PLOTS & MEMPLOT) pool.submit(memClosure as Callable)
-		if (PLOTS & WSPLOT) pool.submit(wsClosure as Callable)
+		if (PLOTS & MEMPLOT)
+			pool.submit(memClosure as Callable)
+		if (PLOTS & WSPLOT)
+			pool.submit(wsClosure as Callable)
 
 		if (PLOTS & LIFEPLOT) {
-			def thetaMap = Collections.synchronizedSortedMap(new TreeMap())
+			thetaMap = Collections.synchronizedSortedMap(new TreeMap())
 			def stepTheta = (int) handler.totalInstructions/width
 		
 			def signalledClean = false
@@ -96,42 +102,50 @@ class LackeySVGraph {
 				else
 					thetaMap[steps] = cleanResult
 			}
-			pool.shutdown()
-			pool.awaitTermination 5, TimeUnit.DAYS
-			
-			def graphTheta = new GraphTheta(thetaMap, width, height,
-				gridMarks, boost)
+
 		}
-		
+		pool.shutdown()
+		try {
+			def at = pool.awaitTermination( 5, TimeUnit.DAYS)
+			println "awaited - $at"
+		}
+		catch(def e){
+			println "eeek: $e"
+		}
+		def pool2 = Executors.newFixedThreadPool(threads)
 		if (PLOTS & LRUPLOT) {
-			def thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap())
-			def memTheta = (int) handler3.maxWS/width
-		
-			(memTheta .. handler3.maxWS).step(memTheta){
+			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap()); println "maxWS is $maxWS"
+			def memTheta = (int) maxWS/width
+			println "memTheta is $memTheta maxWS is $maxWS"
+			(memTheta .. maxWS).step(memTheta){
 				def mem = it
 				Closure pass = {
-					if (verb)
+					//if (verb)
 						println "Setting LRU theta to $mem"
 				
 					def handler5 = new FifthPassHandler(handler, mem,
 						12)
-					def saxReader =
-						SAXParserFactory.newInstance().newSAXParser().XMLReader
-					saxReader.setContentHandler(handler5)
-					saxReader.parse(
+					def saxLRUReader = SAXParserFactory.newInstance().
+						newSAXParser().XMLReader
+					saxLRUReader.setContentHandler(handler5)
+					saxLRUReader.parse(
 						new InputSource(new FileInputStream(fPath)))
-					thetaMap[mem] = (int)(handler.totalInstructions /
+					thetaLRUMap[mem] = (int)(handler.totalInstructions /
 						handler5.faults)
-
-					pool.submit(pass as Callable)
 				}
+				pool2.submit(pass as Callable)
 			}
-			pool.shutdown()
-			pool.awaitTermination 5, TimeUnit.DAYS
-			
-			def graphTheta = new GraphLRUTheta(thetaMap, width, height,
-				 gridMarks, boost) 
 		}
+		
+		pool2.shutdown()
+		pool2.awaitTermination 5, TimeUnit.DAYS
+		
+		if (PLOTS & LIFEPLOT) 
+			def graphTheta = new GraphTheta(thetaMap, width, height,
+				gridMarks, boost)
+		if (PLOTS & LRUPLOT)
+			def graphLRUTheta = new GraphLRUTheta(thetaLRUMap, width, height,
+				gridMarks, boost)
 	}
 }
 
