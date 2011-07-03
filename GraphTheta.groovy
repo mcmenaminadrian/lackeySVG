@@ -53,11 +53,12 @@ class GraphTheta {
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
 				(Long.toString((int)(maxG - rangeG * i/gridMarks), 10)))
 		}
-
-		def lastX = boostSize
-		def lastY = boostSize + height
+		
 		def yFact = height/rangeG
 		def xFact = width/rangeT
+		def lastX = boostSize
+		//initial distance between faults is 1
+		def lastY = boostSize + (height - yFact)
 		thetaMap.each{key, val ->
 			def yPoint = boostSize + (int) (height - val * yFact)
 			svg.line(x1: lastX, y1: lastY,

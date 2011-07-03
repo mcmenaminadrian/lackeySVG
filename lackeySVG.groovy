@@ -28,7 +28,8 @@ class LackeySVGraph {
 		println "Memory range is:"
 		println "${handler.minHeapAddr} - ${handler.maxHeapAddr}"
 		println "Biggest access is ${handler.maxSize}"
-		println "Writing to $oF width: $width height: $height"
+		if (PLOTS & MEMPLOT)
+			println "Writing to $oF width: $width height: $height"
 		if (inst) println "Recording instruction memory range"
 		if (pageSize)
 			println "Using page size granularity of ${2**pageSize} bytes"
@@ -87,12 +88,13 @@ class LackeySVGraph {
 							new InputSource(new FileInputStream(fPath)))
 						thetaMap[steps] = (int)(handler.totalInstructions /
 							handler4.faults)
-						if (!handler4.purged) { //no page replacement required
+						if (handler4.purged == false) {
+							//no page replacement required
 							cleanResult = thetaMap[steps]
 							signalledClean = true
 						}
 				}
-				if (!signalledClean)
+				if (signalledClean == false)
 					pool.submit(pass as Callable)
 				else
 					thetaMap[steps] = cleanResult
@@ -182,11 +184,11 @@ else {
 		wSSize = Integer.parseInt(oAss.s)
 		
 	if (oAss.xm) 
-		PLOTS ^ 0x01
+		PLOTS = PLOTS ^ 0x01
 	if (oAss.xw)
-		PLOTS ^ 0x02
+		PLOTS = PLOTS ^ 0x02
 	if (oAss.xl)
-		PLOTS ^ 0x04
+		PLOTS = PLOTS ^ 0x04
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
 			verb, oFile, percentile, range, pageSize, gridMarks, wSSize,
