@@ -6,10 +6,14 @@ import java.util.concurrent.*
 
 class LackeySVGraph {
 	
+	def MEMPLOT = 0x01
+	def WSPLOT = 0x02
+	def LIFEPLOT = 0x04
+	
 
 	LackeySVGraph(def width, def height, def inst, def fPath, def verb,
 		def oF, def percentile, def range, def pageSize, def gridMarks,
-		def workingSetInst, def threads, def boost)
+		def workingSetInst, def threads, def boost, def PLOTS)
 	{
 		println "Opening $fPath"
 		def handler = new FirstPassHandler(verb)
@@ -53,48 +57,52 @@ class LackeySVGraph {
 			saxReader.parse(new InputSource(new FileInputStream(fPath)))
 		}
 		
-		pool.submit(memClosure as Callable)
-		pool.submit(wsClosure as Callable)
+		if (PLOTS & MEMPLOT) pool.submit(memClosure as Callable)
+		if (PLOTS & WSPLOT) pool.submit(wsClosure as Callable)
 
-		def thetaMap = Collections.synchronizedSortedMap(new TreeMap())
-		def stepTheta = (int) handler.totalInstructions/width
+		if (PLOTS & LIFEPLOT) {
+			def thetaMap = Collections.synchronizedSortedMap(new TreeMap())
+			def stepTheta = (int) handler.totalInstructions/width
 		
-		def signalledClean = false
-		def cleanResult
+			def signalledClean = false
+			def cleanResult
 		
-		Closure stepClosure = {
-			def steps = it	
-			Thread.start pass
-		}
-		
-		(stepTheta .. handler.totalInstructions).step(stepTheta){
-			def steps = it
-			Closure pass = {
-				if (verb)
-					println "Setting theta to $steps"
-				
-				def handler4 = new FourthPassHandler(handler, steps, 12)
-				def saxReader =
-					SAXParserFactory.newInstance().newSAXParser().XMLReader
-				saxReader.setContentHandler(handler4)
-				saxReader.parse(new InputSource(new FileInputStream(fPath)))
-				thetaMap[steps] = (int)(handler.totalInstructions /
-					handler4.faults)
-				if (!handler4.purged) { //no page replacement required
-					cleanResult = thetaMap[steps]
-					signalledClean = true
-				}
+			Closure stepClosure = {
+				def steps = it	
+				Thread.start pass
 			}
-			if (!signalledClean)
-				pool.submit(pass as Callable)
-			else
-				thetaMap[steps] = cleanResult
-		}
-		pool.shutdown()
-		pool.awaitTermination 5, TimeUnit.DAYS
+		
+			(stepTheta .. handler.totalInstructions).step(stepTheta){
+				def steps = it
+				Closure pass = {
+					if (verb)
+						println "Setting theta to $steps"
+				
+						def handler4 = new FourthPassHandler(handler, steps,
+							12)
+						def saxReader =
+						SAXParserFactory.newInstance().newSAXParser().XMLReader
+						saxReader.setContentHandler(handler4)
+						saxReader.parse(
+							new InputSource(new FileInputStream(fPath)))
+						thetaMap[steps] = (int)(handler.totalInstructions /
+							handler4.faults)
+						if (!handler4.purged) { //no page replacement required
+							cleanResult = thetaMap[steps]
+							signalledClean = true
+						}
+				}
+				if (!signalledClean)
+					pool.submit(pass as Callable)
+				else
+					thetaMap[steps] = cleanResult
+			}
+			pool.shutdown()
+			pool.awaitTermination 5, TimeUnit.DAYS
 			
-		def graphTheta = new GraphTheta(thetaMap, width, height,
-			handler.totalInstructions, gridMarks, boost)
+			def graphTheta = new GraphTheta(thetaMap, width, height,
+				handler.totalInstructions, gridMarks, boost)
+		}
 	}
 }
 
@@ -115,6 +123,9 @@ svgCli.m(longOpt:'gridmarks', args: 1, 'grid marks on graph - default 4')
 svgCli.s(longOpt:'workingset', args: 1, 'instructions per working set')
 svgCli.t(longOpt:'threadpool', args: 1, 'size of thread pool (default 3)')
 svgCli.b(longOpt:'margins', args: 1, 'margin size on graphs (default 100px)')
+svgCli.xm(longOpt:'nomemplot', 'do not plot memory use')
+svgCli.xw(longOpt:'nowsplot', 'do not plot working set')
+svgCli.xl(longOpt:'nolifeplot', 'do not plot life time curve')
 
 def oAss = svgCli.parse(args)
 if (oAss.u || args.size() == 0) {
@@ -122,6 +133,7 @@ if (oAss.u || args.size() == 0) {
 }
 else {
 
+	def PLOTS = 0xFF
 	def width = 800
 	def height = 600
 	def percentile = 0
@@ -168,8 +180,15 @@ else {
 		pageSize = Integer.parseInt(oAss.g)
 	if (oAss.s)
 		wSSize = Integer.parseInt(oAss.s)
+		
+	if (oAss.xm) 
+		PLOTS ^ 0x01
+	if (oAss.xw)
+		PLOTS ^ 0x02
+	if (oAss.xl)
+		PLOTS ^ 0x04
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
 			verb, oFile, percentile, range, pageSize, gridMarks, wSSize,
-			threads, boost)
+			threads, boost, PLOTS)
 }
