@@ -16,7 +16,6 @@ class FourthPassHandler extends DefaultHandler {
 	def instCount = 0
 	def nextCount = 0
 	def pageShift
-	def purged
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
@@ -37,10 +36,8 @@ class FourthPassHandler extends DefaultHandler {
 		while (it.hasNext()){
 			Map.Entry page = (Map.Entry)it.next(); 
 			nextCount = page.getValue()
-			if (nextCount < cut) {
+			if (nextCount < cut)
 				it.remove()
-				purged = true
-			}
 			else 
 				break
 		}
