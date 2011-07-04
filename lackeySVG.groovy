@@ -98,6 +98,13 @@ class LackeySVGraph {
 				pool.submit(passWS as Callable)
 			}
 		}
+		
+		pool.shutdown()
+		pool.awaitTermination 5, TimeUnit.DAYS
+
+
+		def pool2 = Executors.newFixedThreadPool(threads)
+
 		if (PLOTS & LRUPLOT) {
 			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap());
 			def memTheta = (int) maxPg/width
@@ -118,12 +125,12 @@ class LackeySVGraph {
 					thetaLRUMap[mem] = (int)(handler.totalInstructions /
 						handler5.faults)
 				}
-				pool.submit(passLRU as Callable)
+				pool2.submit(passLRU as Callable)
 			}
 		}
 		
-		pool.shutdown()
-		pool.awaitTermination 5, TimeUnit.DAYS
+		pool2.shutdown()
+		pool2.awaitTermination 5, TimeUnit.DAYS
 		
 		if (PLOTS & LIFEPLOT) 
 			def graphTheta = new GraphTheta(thetaMap, width, height,
