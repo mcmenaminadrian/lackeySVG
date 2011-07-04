@@ -65,7 +65,7 @@ class FourthPassHandler extends DefaultHandler {
 
 			if (instCount > theta && instCount >= nextCount) {
 				if (instCount - lastFault)
-					aveSize = ((aveSize * lastFault) +
+					aveSize = (double)((aveSize * lastFault) +
 						(mapWS.size() * (instCount - lastFault)))/instCount
 				cleanWS()
 				lastFault = instCount
@@ -79,7 +79,7 @@ class FourthPassHandler extends DefaultHandler {
 			if (!mapWS[address]) {
 				faults++
 				if (instCount - lastFault)
-					aveSize = ((aveSize * lastFault) +
+					aveSize = (double)((aveSize * lastFault) +
 						(mapWS.size() * (instCount - lastFault)))/instCount
 				lastFault = instCount
 			}
@@ -91,7 +91,7 @@ class FourthPassHandler extends DefaultHandler {
 	void endDocument()
 	{
 		if (instCount - lastFault)
-			aveSize = ((aveSize * lastFault) +
+			aveSize = (double)((aveSize * lastFault) +
 				(mapWS.size() * (instCount - lastFault)))/instCount
 		println "Run for theta of $theta instructions completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
