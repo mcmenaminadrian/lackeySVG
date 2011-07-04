@@ -16,7 +16,7 @@ class FourthPassHandler extends DefaultHandler {
 	def instCount = 0
 	def nextCount = 0
 	def pageShift
-	def sizes = []
+	def sizes
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
@@ -27,6 +27,7 @@ class FourthPassHandler extends DefaultHandler {
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
 		mapWS = new LinkedHashMap(1024, 0.7, true)
+		sizes = new ArrayList(0x1000000)
 	}
 	
 	void cleanWS()
