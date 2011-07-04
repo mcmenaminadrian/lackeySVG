@@ -16,7 +16,7 @@ class FourthPassHandler extends DefaultHandler {
 	def instCount = 0
 	def nextCount = 0
 	def pageShift
-	def sizes
+	def aveSize = 0
 	def lastFault = 0
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
@@ -28,7 +28,6 @@ class FourthPassHandler extends DefaultHandler {
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
 		mapWS = new LinkedHashMap(1024, 0.7, true)
-		sizes = new ArrayList(0x1000000)
 	}
 	
 	void cleanWS()
@@ -57,7 +56,8 @@ class FourthPassHandler extends DefaultHandler {
 			if (!mapWS[address]) { 
 				faults++
 				if (instCount - lastFault)
-					sizes << (mapWS.size() * (instCount - lastFault))
+					aveSize = ((aveSize * lastFault) + 
+						(mapWS.size() * (instCount - lastFault)))/instCount
 				lastFault = instCount
 			}
 			
@@ -65,7 +65,8 @@ class FourthPassHandler extends DefaultHandler {
 
 			if (instCount > theta && instCount >= nextCount) {
 				if (instCount - lastFault)
-					sizes << (mapWS.size() * (instCount - lastFault))
+					aveSize = ((aveSize * lastFault) +
+						(mapWS.size() * (instCount - lastFault)))/instCount
 				cleanWS()
 				lastFault = instCount
 			}
@@ -78,7 +79,8 @@ class FourthPassHandler extends DefaultHandler {
 			if (!mapWS[address]) {
 				faults++
 				if (instCount - lastFault)
-					sizes << (mapWS.size() * (instCount - lastFault))
+					aveSize = ((aveSize * lastFault) +
+						(mapWS.size() * (instCount - lastFault)))/instCount
 				lastFault = instCount
 			}
 			mapWS[address] = instCount
@@ -89,7 +91,8 @@ class FourthPassHandler extends DefaultHandler {
 	void endDocument()
 	{
 		if (instCount - lastFault)
-			sizes << (mapWS.size() * (instCount - lastFault))
+			aveSize = ((aveSize * lastFault) +
+				(mapWS.size() * (instCount - lastFault)))/instCount
 		println "Run for theta of $theta instructions completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
 	}
