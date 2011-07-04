@@ -25,7 +25,7 @@ class FifthPassHandler extends DefaultHandler {
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
-		mapWS = new LinkedHashMap(128, 0.7, true)
+		mapWS = new LinkedHashMap(1024, 0.7, true)
 	}
 	
 	void cleanWS()
