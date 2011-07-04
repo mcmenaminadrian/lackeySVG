@@ -228,8 +228,6 @@ else {
 		PLOTS = PLOTS ^ 0x04
 	if (oAss.xr)
 		PLOTS = PLOTS ^ 0x08
-	else
-		PLOTS = PLOTS|0x02 //have to have this information to plot lru curve
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
 			verb, oFile, percentile, range, pageSize, gridMarks, wSSize,

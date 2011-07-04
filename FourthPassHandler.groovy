@@ -77,9 +77,10 @@ class FourthPassHandler extends DefaultHandler {
 	{
 		println "Run for theta of $theta instructions completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
+		def szSum = sizes.sum()
+		def samples = sizes.size()
 		def avSize = sizes.sum()/sizes.size()
-		println "Average working set size was $avSize"
-		println ""
+		println "Average working set size was $avSize, sum was $szSum, samples was $samples"
 	}
 	
 }
