@@ -79,10 +79,9 @@ class FourthPassHandler extends DefaultHandler {
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
 		BigInteger szSum = 0
 		sizes.each{szSum += it}
-		def szSum2 = sizes.sum()
 		def samples = sizes.size()
-		def avSize = sizes.sum()/sizes.size()
-		println "Average working set size was $avSize, sum was $szSum2 or $szSum, samples was $samples"
+		def avSize = szSum/samples
+		println "Average working set size was $avSize"
 	}
 	
 }
