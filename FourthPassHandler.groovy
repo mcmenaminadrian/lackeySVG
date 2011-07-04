@@ -17,6 +17,7 @@ class FourthPassHandler extends DefaultHandler {
 	def nextCount = 0
 	def pageShift
 	def sizes
+	def lastFault = 0
 	
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
@@ -53,22 +54,33 @@ class FourthPassHandler extends DefaultHandler {
 			def siz = Long.decode(attrs.getValue('size'))
 			instCount += siz
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS[address]) 
+			if (!mapWS[address]) { 
 				faults++
+				if (instCount - lastFault)
+					sizes << (mapWS.size() * (instCount - lastFault))
+				lastFault = instCount
+			}
 			
 			mapWS[address] = instCount
 
-			if (instCount > theta && instCount >= nextCount)
+			if (instCount > theta && instCount >= nextCount) {
+				if (instCount - lastFault)
+					sizes << (mapWS.size() * (instCount - lastFault))
 				cleanWS()
-			sizes << mapWS.size()
+				lastFault = instCount
+			}
 			break
 			
 			case 'store':
 			case 'load':
 			case 'modify':
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS[address])
+			if (!mapWS[address]) {
 				faults++
+				if (instCount - lastFault)
+					sizes << (mapWS.size() * (instCount - lastFault))
+				lastFault = instCount
+			}
 			mapWS[address] = instCount
 			break
 		}
@@ -76,6 +88,8 @@ class FourthPassHandler extends DefaultHandler {
 		
 	void endDocument()
 	{
+		if (instCount - lastFault)
+			sizes << (mapWS.size() * (instCount - lastFault))
 		println "Run for theta of $theta instructions completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
 	}
