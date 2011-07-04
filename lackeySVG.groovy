@@ -91,13 +91,10 @@ class LackeySVGraph {
 					def g = (int)(handler.totalInstructions /
 						handler4.faults)
 					thetaMap[steps] = g
-					println "step 0"
 					BigInteger sumMem = handler4.sizes.sum(0G)
-					println "step 1"
-					def avgWSS = sumMem/handler4.sizes.size()
-					println "step 2"
+					def avgWSS = sumMem/handler.totalInstructions
 					thetaAveMap[avgWSS] = g
-					println "step 3" 
+					println "Ave. working set $avgWSS"
 
 				}
 				pool.submit(passWS as Callable)
