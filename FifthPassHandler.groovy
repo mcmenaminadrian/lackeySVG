@@ -83,7 +83,7 @@ class FifthPassHandler extends DefaultHandler {
 	{
 		println "Run for theta of $theta max size working set completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
-		println "Ave. working set size $sizeAve"
+		println "Ave. working set size $aveSize"
 	}
 	
 }
