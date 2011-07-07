@@ -3,7 +3,7 @@ import groovy.xml.MarkupBuilder
 
 class GraphCompTheta {
 
-	GraphCompTheta(def thetaAveMap, def thetaLRUMap, 
+	GraphCompTheta(def thetaAveMap, def thetaLRUAveMap, 
 		def width, def height, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"
@@ -72,11 +72,8 @@ class GraphCompTheta {
 		
 		lastX = boostSize
 		lastY = boostSize + (height - yFact)
-		thetas = thetaLRUMap.keySet()
-		maxT = thetas.max()
-		rangeT = maxT
-		xFact = width/rangeT
-		thetaLRUMap.each{key, val ->
+		thetas = thetaLRUAveMap.keySet()
+		thetaLRUAveMap.each{key, val ->
 			def yPoint = boostSize + (int) (height - val * yFact)
 			svg.line(x1: lastX, y1: lastY,
 				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,
