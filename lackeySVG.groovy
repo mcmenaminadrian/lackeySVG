@@ -125,7 +125,7 @@ class LackeySVGraph {
 					saxLRUReader.parse(
 						new InputSource(new FileInputStream(fPath)))
 					def g = (int)(handler.totalInstructions /
-						handler5.faults
+						handler5.faults)
 					thetaLRUMap[mem] = g 
 					thetaLRUAveMap[handler5.aveSize] = g
 				}
