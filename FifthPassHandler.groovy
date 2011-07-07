@@ -16,6 +16,8 @@ class FifthPassHandler extends DefaultHandler {
 	def instCount = 0
 	def nextCount = 0
 	def pageShift
+	def aveSize = 0
+	def lastFault = 0
 	
 	FifthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
@@ -25,7 +27,7 @@ class FifthPassHandler extends DefaultHandler {
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
-		mapWS = new LinkedHashMap(1024, 0.7, true)
+		mapWS = new LinkedHashMap(512, 0.7, true)
 	}
 	
 	void cleanWS()
@@ -47,8 +49,13 @@ class FifthPassHandler extends DefaultHandler {
 			def siz = Long.decode(attrs.getValue('size'))
 			instCount += siz
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS[address]) 
+			if (!mapWS[address]){
 				faults++
+				if (instCount - lastFault)
+					aveSize = (double) ((aveSize * lastFault) +
+						(mapWS.size() * (instCount - lastFault)))/instCount
+					lastFault = instCount
+				}
 			mapWS[address] = instCount
 			if (mapWS.size() > theta)
 				cleanWS()
@@ -58,8 +65,13 @@ class FifthPassHandler extends DefaultHandler {
 			case 'load':
 			case 'modify':
 			def address = (Long.decode(attrs.getValue('address')) >> pageShift)
-			if (!mapWS[address])
+			if (!mapWS[address]){
 				faults++
+				if (instCount - lastFault)
+					aveSize = (double) ((aveSize * lastFault) +
+						(mapWS.size() * (instCount - lastFault)))/instCount
+					lastFault = instCount
+				}
 			mapWS[address] = instCount
 			if (mapWS.size() > theta)
 				cleanWS()
@@ -69,8 +81,9 @@ class FifthPassHandler extends DefaultHandler {
 		
 	void endDocument()
 	{
-		println "Run for theta of $theta size working set completed:"
+		println "Run for theta of $theta max size working set completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
+		println "Ave. working set size $sizeAve"
 	}
 	
 }

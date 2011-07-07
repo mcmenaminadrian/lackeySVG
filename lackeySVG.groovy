@@ -19,6 +19,7 @@ class LackeySVGraph {
 		def thetaLRUMap
 		def thetaMap
 		def thetaAveMap
+		def thetaLRUAveMap
 		println "Opening $fPath"
 		def handler = new FirstPassHandler(verb, pageSize)
 		def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
@@ -106,7 +107,8 @@ class LackeySVGraph {
 		def pool2 = Executors.newFixedThreadPool(threads)
 
 		if (PLOTS & LRUPLOT) {
-			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap());
+			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap())
+			thetaLRUAveMap = Collections.synchronizedSortedMap(new TreeMap())
 			def memTheta = (int) maxPg/width
 			if (memTheta == 0)
 				memTheta = 1
@@ -122,8 +124,10 @@ class LackeySVGraph {
 					saxLRUReader.setContentHandler(handler5)
 					saxLRUReader.parse(
 						new InputSource(new FileInputStream(fPath)))
-					thetaLRUMap[mem] = (int)(handler.totalInstructions /
-						handler5.faults)
+					def g = (int)(handler.totalInstructions /
+						handler5.faults
+					thetaLRUMap[mem] = g 
+					thetaLRUAveMap[handler5.aveSize] = g
 				}
 				pool2.submit(passLRU as Callable)
 			}
@@ -139,7 +143,7 @@ class LackeySVGraph {
 			def graphLRUTheta = new GraphLRUTheta(thetaLRUMap, width, height,
 				gridMarks, boost)
 		if ((PLOTS & LRUPLOT) && (PLOTS & LIFEPLOT))
-			def graphCompTheta = new GraphCompTheta(thetaAveMap, thetaLRUMap, 
+			def graphCompTheta = new GraphCompTheta(thetaAveMap, thetaLRUAveMap, 
 				width, height, gridMarks, boost)
 	}
 }
