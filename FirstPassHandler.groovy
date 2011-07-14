@@ -48,8 +48,20 @@ class FirstPassHandler extends DefaultHandler {
 			break
 				
 			case 'instruction':
-			def address = Long.decode(attrs.getValue('address'))
-			def siz = Long.decode(attrs.getValue('size'))
+			def address
+			def strAddr
+			def siz
+			def strSize
+			strAddr = attrs.getValue('address');
+			if (strAddr)
+				address = Long.decode(strAddr)
+			else
+				break
+			strSize = attrs.getValue('size')
+			if (strSize)
+				siz = Long.decode(strSize)
+			else
+				break
 			if (siz > maxSize)
 				maxSize = siz
 			if (address < minInstructionAddr)
@@ -65,8 +77,19 @@ class FirstPassHandler extends DefaultHandler {
 			case 'modify':
 			case 'load':
 			case 'store':
-			BigInteger address = Long.decode(attrs.getValue('address'))
-			def siz = Long.decode(attrs.getValue('size'))
+			BigInteger address
+			def strSize
+			def siz
+			def strAddr = attrs.getValue('address')
+			if (strAddr)
+				address = Long.decode(strAddr)
+			else
+				break
+			strSize = atts.getValue('size')
+			if (strSize)
+				siz = Long.decode(attrs.getValue('size'))
+			else
+				break
 			if (siz > maxSize)
 				maxSize = siz
 			if (address < minHeapAddr)
