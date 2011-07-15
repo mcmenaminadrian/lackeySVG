@@ -85,7 +85,7 @@ class FirstPassHandler extends DefaultHandler {
 				address = Long.decode(strAddr)
 			else
 				break
-			strSize = atts.getValue('size')
+			strSize = attrs.getValue('size')
 			if (strSize)
 				siz = Long.decode(attrs.getValue('size'))
 			else
