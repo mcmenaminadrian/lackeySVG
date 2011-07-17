@@ -1,8 +1,23 @@
 
 import groovy.xml.MarkupBuilder
 
+/**
+ * 
+ * @author Adrian McMenamin
+ *
+ */
 class GraphCompTheta {
 
+	/**
+	 * Graph the lifetime functions of both the working set and
+	 * LRU methods of page caching
+	 * @param thetaAveMap data about the working set cache
+	 * @param thetaLRUAveMap data about the LRU cache
+	 * @param width width in pixels of graph
+	 * @param height height in pixels of graph
+	 * @param gridMarks number of grid lines
+	 * @param boostSize size of margin in pixels
+	 */
 	GraphCompTheta(def thetaAveMap, def thetaLRUAveMap, 
 		def width, def height, def gridMarks, def boostSize)
 	{

@@ -2,7 +2,11 @@ import javax.xml.parsers.SAXParserFactory
 import org.xml.sax.helpers.DefaultHandler
 import org.xml.sax.*
 
-
+/**
+ * 
+ * @author Adrian McMenamin
+ *
+ */
 class FirstPassHandler extends DefaultHandler {
 	//handle the events from first pass through the XML file
 	//called by SAX processor
@@ -17,6 +21,11 @@ class FirstPassHandler extends DefaultHandler {
 	def pageMap = [:]
 	def pageShift
 	
+	/**
+	 * Perform essential analysis of lackeyml file 
+	 * @param verb verbose output
+	 * @param pageShift bit shift for page size
+	 */
 	FirstPassHandler(def verb, def pageShift)
 	{
 		super()
@@ -27,13 +36,19 @@ class FirstPassHandler extends DefaultHandler {
 			this.pageShift = pageShift
 
 	}
-	
+	/**
+	 * Prints to standard output when verbose output selected
+	 * @param str string to output
+	 */
 	void printout(def str)
 	{
 		if (verb)
 			println(str)
 	}
 	
+	/**
+	 * SAX startElement - processes information about lackeyml
+	 */
 	void startElement(String ns, String localName, String qName, 
 		Attributes attrs) {
 			

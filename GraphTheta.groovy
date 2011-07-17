@@ -1,7 +1,21 @@
 import groovy.xml.MarkupBuilder
 
+
+/**
+ * 
+ * @author Adrian McMenamin
+ *
+ */
 class GraphTheta {
 
+	/**
+	 * Graph the lifetime function when working set style caching is applied
+	 * @param thetaMap data about the working set cache
+	 * @param width width of the graph in pixels
+	 * @param height height of the graph in pixels
+	 * @param gridMarks grid lines
+	 * @param boostSize size of the margins in pixels
+	 */
 	GraphTheta(def thetaMap, def width, def height, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"

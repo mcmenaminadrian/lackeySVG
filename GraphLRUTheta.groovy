@@ -1,7 +1,20 @@
 import groovy.xml.MarkupBuilder
 
+/**
+ * 
+ * @author Adrian McMenamin
+ *
+ */
 class GraphLRUTheta {
 
+	/**
+	 * Graph lifetime fuction using LRU method of caching
+	 * @param thetaLRUMap data about LRU cache
+	 * @param width width of graph in pixels
+	 * @param height height of graph in pixels
+	 * @param gridMarks grid lines on graph
+	 * @param boostSize margin size in pixels
+	 */
 	GraphLRUTheta(def thetaLRUMap, def width, def height, def gridMarks,
 		def boostSize)
 	{

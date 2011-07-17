@@ -4,18 +4,39 @@ import org.xml.sax.*
 import java.util.concurrent.*
 
 
+/**
+ * 
+ * @author Adrian McMenamin, copyright 2011
+ *
+ */
 class LackeySVGraph {
-	
+
 	def MEMPLOT = 0x01
 	def WSPLOT = 0x02
 	def LIFEPLOT = 0x04
 	def LRUPLOT = 0x08
-	
 
+	/**
+	 * Build various graphs from a lackeyml file
+	 * 
+	 * @param width width of the graph in pixels
+	 * @param height height of the graph in pixels
+	 * @param inst graph instructions
+	 * @param fPath path to the lackeyml file being processed
+	 * @param verb verbose output
+	 * @param oF name of reference map output file
+	 * @param percentile percentile of memory to form base of reference map
+	 * @param range range of memory to be examined in reference map
+	 * @param pageSize bit shift used for pages (eg 12 for 4096KB pages)
+	 * @param gridMarks number of grid marks to be used on graphs
+	 * @param workingSetInst number of instructions against which to plot working set
+	 * @param threads size of thread pool
+	 * @param boost size of margin on graphs
+	 * @param PLOTS bitmask for graphs to be drawn
+	 */
 	LackeySVGraph(def width, def height, def inst, def fPath, def verb,
-		def oF, def percentile, def range, def pageSize, def gridMarks,
-		def workingSetInst, def threads, def boost, def PLOTS)
-	{
+	def oF, def percentile, def range, def pageSize, def gridMarks,
+	def workingSetInst, def threads, def boost, def PLOTS) {
 		def thetaLRUMap
 		def thetaMap
 		def thetaAveMap
@@ -25,7 +46,7 @@ class LackeySVGraph {
 		def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
 		reader.setContentHandler(handler)
 		reader.parse(new InputSource(new FileInputStream(fPath)))
-		
+
 		println "First pass completed"
 		println "Instruction range is:"
 		println "${handler.minInstructionAddr} - ${handler.maxInstructionAddr}"
@@ -44,29 +65,28 @@ class LackeySVGraph {
 		println "Total pages referrenced $maxPg"
 		def pool = Executors.newFixedThreadPool(threads)
 
-			
+
 		def memClosure = {
 			def handler2 = new SecondPassHandler(verb, handler, width, height,
-			inst, oF, percentile, range, pageSize, gridMarks, boost)
+					inst, oF, percentile, range, pageSize, gridMarks, boost)
 			def saxReader = SAXParserFactory.newInstance().
-				newSAXParser().XMLReader	
+					newSAXParser().XMLReader
 			saxReader.setContentHandler(handler2)
 			saxReader.parse(new InputSource(new FileInputStream(fPath)))
 			println "Memory use mapping complete"
 		}
-		
+
 		def wsClosure = {
 			def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
-				width, height, gridMarks, boost)
+					width, height, gridMarks, boost)
 			def saxReader = SAXParserFactory.newInstance().
-				newSAXParser().XMLReader
+					newSAXParser().XMLReader
 			saxReader.setContentHandler(handler3)
 			saxReader.parse(new InputSource(new FileInputStream(fPath)))
 			maxWS = handler3.maxWS
 			println "Working set mapping complete"
-	
 		}
-		
+
 		if (PLOTS & MEMPLOT)
 			pool.submit(memClosure as Callable)
 		if (PLOTS & WSPLOT)
@@ -76,30 +96,29 @@ class LackeySVGraph {
 			println "Plotting life with variable WSS"
 			thetaMap = Collections.synchronizedSortedMap(new TreeMap())
 			thetaAveMap = Collections.synchronizedSortedMap(new TreeMap())
-			def stepTheta = (int) handler.totalInstructions/width	
+			def stepTheta = (int) handler.totalInstructions/width
 			(stepTheta .. handler.totalInstructions).step(stepTheta){
 				def steps = it
 				Closure passWS = {
 					if (verb)
 						println "Setting theta to $steps"
 					def handler4 = new FourthPassHandler(handler, steps,
-						12)
+							12)
 					def saxReader =
-						SAXParserFactory.newInstance().newSAXParser().XMLReader
+							SAXParserFactory.newInstance().newSAXParser().XMLReader
 					saxReader.setContentHandler(handler4)
 					saxReader.parse(
-						new InputSource(new FileInputStream(fPath)))
+							new InputSource(new FileInputStream(fPath)))
 					def g = (int)(handler.totalInstructions /
-						handler4.faults)
+							handler4.faults)
 					thetaMap[steps] = g
 					thetaAveMap[handler4.aveSize] = g
 					println "Ave. working set ${handler4.aveSize}"
-
 				}
 				pool.submit(passWS as Callable)
 			}
 		}
-		
+
 		pool.shutdown()
 		pool.awaitTermination 5, TimeUnit.DAYS
 
@@ -118,43 +137,43 @@ class LackeySVGraph {
 					if (verb)
 						println "Setting LRU theta to $mem"
 					def handler5 = new FifthPassHandler(handler, mem,
-						12)
+							12)
 					def saxLRUReader = SAXParserFactory.newInstance().
-						newSAXParser().XMLReader
+							newSAXParser().XMLReader
 					saxLRUReader.setContentHandler(handler5)
 					saxLRUReader.parse(
-						new InputSource(new FileInputStream(fPath)))
+							new InputSource(new FileInputStream(fPath)))
 					def g = (int)(handler.totalInstructions /
-						handler5.faults)
-					thetaLRUMap[mem] = g 
+							handler5.faults)
+					thetaLRUMap[mem] = g
 					thetaLRUAveMap[handler5.aveSize] = g
 				}
 				pool2.submit(passLRU as Callable)
 			}
 		}
-		
+
 		pool2.shutdown()
 		pool2.awaitTermination 5, TimeUnit.DAYS
-		
-		if (PLOTS & LIFEPLOT) 
+
+		if (PLOTS & LIFEPLOT)
 			def graphTheta = new GraphTheta(thetaMap, width, height,
-				gridMarks, boost)
+					gridMarks, boost)
 		if (PLOTS & LRUPLOT)
 			def graphLRUTheta = new GraphLRUTheta(thetaLRUMap, width, height,
-				gridMarks, boost)
+					gridMarks, boost)
 		if ((PLOTS & LRUPLOT) && (PLOTS & LIFEPLOT))
-			def graphCompTheta = new GraphCompTheta(thetaAveMap, thetaLRUAveMap, 
-				width, height, gridMarks, boost)
+			def graphCompTheta = new GraphCompTheta(thetaAveMap, thetaLRUAveMap,
+					width, height, gridMarks, boost)
 	}
 }
 
 
 def svgCli = new CliBuilder
-	(usage: 'lackeySVG [options] <lackeyml file>')
+		(usage: 'lackeySVG [options] <lackeyml file>')
 svgCli.w(longOpt:'width', args: 1,
-	'width of SVG ouput - default 800')
+		'width of SVG ouput - default 800')
 svgCli.h(longOpt:'height', args: 1,
-	 'height of SVG output - default 600')
+		'height of SVG output - default 600')
 svgCli.i(longOpt: 'instructions', 'graph instructions - default false')
 svgCli.u(longOpt: 'usage', 'prints this information')
 svgCli.v(longOpt: 'verbose', 'prints verbose information - default false')
@@ -214,17 +233,17 @@ else {
 		if (oAss.r) {
 			def tRange = Integer.parseInt(oAss.r)
 			if (tRange >= 1 && tRange <= (101 - percentile))
-				range = tRange 
+				range = tRange
 		}
 	}
 	if (oAss.m)
 		gridMarks = Integer.parseInt(oAss.m)
-	if (oAss.g) 
+	if (oAss.g)
 		pageSize = Integer.parseInt(oAss.g)
 	if (oAss.s)
 		wSSize = Integer.parseInt(oAss.s)
-		
-	if (oAss.xm) 
+
+	if (oAss.xm)
 		PLOTS = PLOTS ^ 0x01
 	if (oAss.xw)
 		PLOTS = PLOTS ^ 0x02

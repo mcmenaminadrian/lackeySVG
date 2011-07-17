@@ -6,6 +6,11 @@ import org.xml.sax.helpers.DefaultHandler
 import org.xml.sax.*
 import groovy.xml.MarkupBuilder
 
+/**
+ * 
+ * @author Adrian McMenamin
+ *
+ */
 class SecondPassHandler extends DefaultHandler {
 
 	def verb
@@ -35,6 +40,21 @@ class SecondPassHandler extends DefaultHandler {
 	def biggest
 	FirstPassHandler fPH
 
+	/**
+	 * Calculate and draw the memory reference map
+	 * 
+	 * @param verb verbose output
+	 * @param handler contains basic information about lackeyml file
+	 * @param width width of graph in pixels
+	 * @param height height of graph in pixels
+	 * @param inst plot instructions
+	 * @param oFile path to output file
+	 * @param percentile percentile to begin plot with
+	 * @param range range of percentiles to plot
+	 * @param pageSize page size to use
+	 * @param gridMarks grid lines to draw
+	 * @param boost margin size in pixels
+	 */
 	SecondPassHandler(def verb, def handler, def width, def height,
 	def inst, def oFile, def percentile, def range, def pageSize,
 	def gridMarks, def boost) {
@@ -77,6 +97,9 @@ class SecondPassHandler extends DefaultHandler {
 		instTrack = 0;
 	}
 
+	/**
+	 * Write out SVG header and draw axes and grid
+	 */
 	void startDocument() {
 		if (verb) println "Writing SVG header"
 		def cWidth = width + 2 * boostSize
@@ -156,6 +179,9 @@ class SecondPassHandler extends DefaultHandler {
 				"INSTRUCTIONS ($instPerPixel per pixel)")
 	}
 
+	/**
+	 * Calculations are complete, so plot points
+	 */
 	void endDocument() {
 		println "]"
 		println "Mapping complete, now drawing points"
@@ -216,6 +242,9 @@ class SecondPassHandler extends DefaultHandler {
 		writer.close()
 	}
 
+	/**
+	 * SAX startElement - calculate pages accessed
+	 */
 	void startElement(String ns, String localName, String qName,
 	Attributes attrs) {
 		switch(qName) {

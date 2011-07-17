@@ -6,6 +6,11 @@ import org.xml.sax.helpers.DefaultHandler
 import org.xml.sax.*
 import groovy.xml.MarkupBuilder
 
+/**
+ * 
+ * @author Adrian McMenamin
+ *
+ */
 class FifthPassHandler extends DefaultHandler {
 
 	def theta
@@ -19,6 +24,12 @@ class FifthPassHandler extends DefaultHandler {
 	def aveSize = 0
 	def lastFault = 0
 	
+	/**
+	 * Calculate fault rate for fixed max working set (LRU style)
+	 * @param firstPassHandler holds basic data about lackeyml file
+	 * @param theta maximum size of page cache/working set
+	 * @param pageShift bit shift for page size
+	 */
 	FifthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
 		this.firstPassHandler = firstPassHandler
@@ -30,6 +41,9 @@ class FifthPassHandler extends DefaultHandler {
 		mapWS = new LinkedHashMap(512, 0.7, true)
 	}
 	
+	/**
+	 * Remove LRU page
+	 */
 	void cleanWS()
 	{
 		//simply chop the LRU page
@@ -40,6 +54,9 @@ class FifthPassHandler extends DefaultHandler {
 		}
 	}
 	
+	/**
+	 * SAX startElement
+	 */
 	void startElement(String ns, String localName, String qName,
 		Attributes attrs) {
 		
@@ -79,6 +96,9 @@ class FifthPassHandler extends DefaultHandler {
 		}
 	}
 		
+	/**
+	 * SAX endDocument
+	 */
 	void endDocument()
 	{
 		println "Run for theta of $theta max size working set completed:"

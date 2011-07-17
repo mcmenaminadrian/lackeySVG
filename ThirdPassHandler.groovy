@@ -6,6 +6,11 @@ import org.xml.sax.helpers.DefaultHandler
 import org.xml.sax.*
 import groovy.xml.MarkupBuilder
 
+/**
+ * 
+ * @author Adrian McMenamin
+ *
+ */
 class ThirdPassHandler extends DefaultHandler {
 	
 	def verb
@@ -26,6 +31,17 @@ class ThirdPassHandler extends DefaultHandler {
 	def gridMarks
 	def range
 
+	/**
+	 * Calculate and plot the working set size as a function of the
+	 * number of instructions executed 
+	 * @param verb verbose output
+	 * @param fPHandler holds basic data about lackeyml file
+	 * @param wSetInst maximum number of instructions to hold page in WS
+	 * @param width width of graph in pixels
+	 * @param height height of graph in pixels
+	 * @param gridMarks grid lines to be drawn
+	 * @param boost width of margins in pixels
+	 */
 	ThirdPassHandler(def verb, def fPHandler, def wSetInst,
 		def width, def height, def gridMarks, def boost)
 	{
@@ -53,6 +69,9 @@ class ThirdPassHandler extends DefaultHandler {
 		
 	}
 	
+	/**
+	 * SAX startDocument - write out SVG header
+	 */
 	void startDocument()
 	{
 		if (verb) println "Writing SVG header"
@@ -67,6 +86,10 @@ class ThirdPassHandler extends DefaultHandler {
 		writer.write("xmlns=\"http://www.w3.org/2000/svg\">\n")
 	}
 	
+	/**
+	 * Add and remove pages from Map of working set
+	 * @return updated Map of working set
+	 */
 	Map addWSPoint()
 	{
 		def wsSize = mapWS.size()
@@ -79,6 +102,9 @@ class ThirdPassHandler extends DefaultHandler {
 		}
 	}
 	
+	/**
+	 * SAX startElement - process lackeyml file
+	 */
 	void startElement(String ns, String localName, String qName,
 		Attributes attrs) {
 		switch (qName) {
@@ -114,6 +140,9 @@ class ThirdPassHandler extends DefaultHandler {
 		}
 	}
 		
+	/**
+	 * calculations complete - now plot graph
+	 */
 	void endDocument()
 	{
 		println "Drawing working set graph"

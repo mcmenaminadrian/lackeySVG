@@ -6,6 +6,11 @@ import org.xml.sax.helpers.DefaultHandler
 import org.xml.sax.*
 import groovy.xml.MarkupBuilder
 
+/**
+ * Processes lackeyml information for variable working set size
+ * @author Adrian McMenamin
+ *
+ */
 class FourthPassHandler extends DefaultHandler {
 
 	def theta
@@ -19,6 +24,12 @@ class FourthPassHandler extends DefaultHandler {
 	def aveSize = 0
 	def lastFault = 0
 	
+	/**
+	 * Parse the lackeyml file mimicing a variable working set size
+	 * @param firstPassHandler holds basic information about lackeyml file
+	 * @param theta time (instructions executed) over which to hold WS
+	 * @param pageShift bit shift for page size
+	 */
 	FourthPassHandler(def firstPassHandler, def theta, def pageShift) {
 		super()
 		this.firstPassHandler = firstPassHandler
@@ -30,6 +41,9 @@ class FourthPassHandler extends DefaultHandler {
 		mapWS = new LinkedHashMap(1024, 0.7, true)
 	}
 	
+	/**
+	 * Purge pages from working set when they are too old
+	 */
 	void cleanWS()
 	{
 		def cut = instCount - theta
@@ -44,6 +58,9 @@ class FourthPassHandler extends DefaultHandler {
 		}
 	}
 	
+	/**
+	 * SAX startElement - checks if referenced page is in working set
+	 */
 	void startElement(String ns, String localName, String qName,
 		Attributes attrs) {
 		
@@ -88,13 +105,16 @@ class FourthPassHandler extends DefaultHandler {
 		}
 	}
 		
+	/**
+	 * SAX endDocument - smooth exit and output some information
+	 */
 	void endDocument()
 	{
 		if (instCount - lastFault)
 			aveSize = (double)((aveSize * lastFault) +
 				(mapWS.size() * (instCount - lastFault)))/instCount
 		println "Run for theta of $theta instructions completed:"
-		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
+		println "Faults: $faults, g():${firstPassHandler.totalInstructions/faults}"
 	}
 	
 }
