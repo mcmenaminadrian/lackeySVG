@@ -29,7 +29,8 @@ class LackeySVGraph {
 	 * @param range range of memory to be examined in reference map
 	 * @param pageSize bit shift used for pages (eg 12 for 4096KB pages)
 	 * @param gridMarks number of grid marks to be used on graphs
-	 * @param workingSetInst number of instructions against which to plot working set
+	 * @param workingSetInst number of instructions
+	 * 			against which to plot working set
 	 * @param threads size of thread pool
 	 * @param boost size of margin on graphs
 	 * @param PLOTS bitmask for graphs to be drawn
@@ -105,7 +106,8 @@ class LackeySVGraph {
 					def handler4 = new FourthPassHandler(handler, steps,
 							12)
 					def saxReader =
-							SAXParserFactory.newInstance().newSAXParser().XMLReader
+							SAXParserFactory.newInstance().
+								newSAXParser().XMLReader
 					saxReader.setContentHandler(handler4)
 					saxReader.parse(
 							new InputSource(new FileInputStream(fPath)))
@@ -162,8 +164,8 @@ class LackeySVGraph {
 			def graphLRUTheta = new GraphLRUTheta(thetaLRUMap, width, height,
 					gridMarks, boost)
 		if ((PLOTS & LRUPLOT) && (PLOTS & LIFEPLOT))
-			def graphCompTheta = new GraphCompTheta(thetaAveMap, thetaLRUAveMap,
-					width, height, gridMarks, boost)
+			def graphCompTheta = new GraphCompTheta(thetaAveMap, 
+				thetaLRUAveMap, width, height, gridMarks, boost)
 	}
 }
 
