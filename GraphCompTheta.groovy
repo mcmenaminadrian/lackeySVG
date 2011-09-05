@@ -24,9 +24,7 @@ class GraphCompTheta {
 		println "Drawing lifetime function"
 		def thetas
 		def gs
-		def maxG
 		def maxT
-		def rangeT
 		def rangeG
 		def maxWSS = thetaAveMap.values().max()
 		def maxLRU = thetaLRUAveMap.values().max()
@@ -39,8 +37,6 @@ class GraphCompTheta {
 		}
 		maxG = gs.max()
 		maxT = thetas.max()
-		rangeT = maxT
-		rangeG = maxG
 		def writer = new FileWriter ("CMPTHETA${new Date().time.toString()}.svg")
 		def svg = new MarkupBuilder(writer)
 		//header etc
@@ -70,7 +66,7 @@ class GraphCompTheta {
 			svg.text(x:(int)(boostSize - 5 + width * i/gridMarks),
 				y:20 + height + boostSize,
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
-				((int) rangeT * i / gridMarks))
+				((int) maxT * i / gridMarks))
 
 			svg.line(x1:boostSize - 20,
 				y1:(int)(height * i/gridMarks + boostSize),
@@ -81,11 +77,11 @@ class GraphCompTheta {
 			svg.text(x:boostSize - 60,
 				y: (int)(5 + height * i/gridMarks + boostSize),
 				style: "font-family: Helvetica; font-size:10; fill: maroon",
-				(Long.toString((int)(maxG - rangeG * i/gridMarks), 10)))
+				(Long.toString((int)(maxG - maxG * i/gridMarks), 10)))
 		}
 		
-		def yFact = height/rangeG
-		def xFact = width/rangeT
+		def yFact = height/maxG
+		def xFact = width/maxT
 		def lastX = boostSize
 		//initial distance between faults is 1
 		def lastY = boostSize + (height - yFact)
@@ -100,7 +96,6 @@ class GraphCompTheta {
 		
 		lastX = boostSize
 		lastY = boostSize + (height - yFact)
-		thetas = thetaLRUAveMap.keySet()
 		thetaLRUAveMap.each{key, val ->
 			def yPoint = boostSize + (int) (height - val * yFact)
 			svg.line(x1: lastX, y1: lastY,
