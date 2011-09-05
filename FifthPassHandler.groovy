@@ -102,7 +102,7 @@ class FifthPassHandler extends DefaultHandler {
 	 */
 	void endDocument()
 	{
-		aveSize = averages.sum()/averages.size()
+		aveSize = averages.sum()/(averages.size() * instCount)
 		println "Run for theta of $theta max size working set completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
 		println "Ave. working set size $aveSize"
