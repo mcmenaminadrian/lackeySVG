@@ -86,7 +86,7 @@ class GraphCompTheta {
 		//initial distance between faults is 1
 		def lastY = boostSize + (height - yFact)
 		thetaAveMap.each{key, val ->
-			def yPoint = boostSize + (int) (height - val * yFact)
+			def yPoint = boostSize + height - (int)(val * yFact)
 			svg.line(x1: lastX, y1: lastY,
 				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,
 				style:"fill:none; stroke:red; stroke-width:1;")
@@ -97,7 +97,7 @@ class GraphCompTheta {
 		lastX = boostSize
 		lastY = boostSize + (height - yFact)
 		thetaLRUAveMap.each{key, val ->
-			def yPoint = boostSize + (int) (height - val * yFact)
+			def yPoint = boostSize + height - (int)(val * yFact)
 			svg.line(x1: lastX, y1: lastY,
 				x2:(int)(key * xFact) + 1 + boostSize, y2:yPoint,
 				style:"fill:none; stroke:blue; stroke-width:1;")
