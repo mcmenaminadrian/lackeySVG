@@ -22,12 +22,25 @@ class GraphCompTheta {
 		def width, def height, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"
-		def thetas = thetaAveMap.keySet()
-		def gs = thetaAveMap.values()
-		def maxG = gs.max()
-		def maxT = thetas.max()
-		def rangeT = maxT
-		def rangeG = maxG
+		def thetas
+		def gs
+		def maxG
+		def maxT
+		def rangeT
+		def rangeG
+		def maxWSS = thetaAveMap.values().max()
+		def maxLRU = thetaLRUAveMap.values().max()
+		if (maxWSS > maxLRU) {
+			thetas = thetaAveMap.keySet()
+			gs = thetaAveMap.values()
+		} else {
+			thetas = thetaLRUAveMap.keySet()
+			gs = thetaLRUAveMap.values()
+		}
+		maxG = gs.max()
+		maxT = thetas.max()
+		rangeT = maxT
+		rangeG = maxG
 		def writer = new FileWriter ("CMPTHETA${new Date().time.toString()}.svg")
 		def svg = new MarkupBuilder(writer)
 		//header etc
