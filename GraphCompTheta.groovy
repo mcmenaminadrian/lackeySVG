@@ -25,7 +25,7 @@ class GraphCompTheta {
 		def thetas
 		def gs
 		def maxT
-		def rangeG
+		def maxG
 		def maxWSS = (thetaAveMap.values()).max()
 		def maxLRU = (thetaLRUAveMap.values()).max()
 		if (maxWSS > maxLRU) {
