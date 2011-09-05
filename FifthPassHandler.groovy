@@ -23,7 +23,6 @@ class FifthPassHandler extends DefaultHandler {
 	def pageShift
 	def aveSize = 0
 	def lastFault = 0
-	def averages = []
 	
 	/**
 	 * Calculate fault rate for fixed max working set (LRU style)
@@ -70,7 +69,6 @@ class FifthPassHandler extends DefaultHandler {
 			if (!mapWS[address]){
 				faults++
 				if (instCount - lastFault)
-					averages << mapWS.size() * (instCount - lastFault)
 					aveSize = (double) ((aveSize * lastFault) +
 						(mapWS.size() * (instCount - lastFault)))/instCount
 					lastFault = instCount
@@ -87,7 +85,8 @@ class FifthPassHandler extends DefaultHandler {
 			if (!mapWS[address]){
 				faults++
 				if (instCount - lastFault)
-					averages << mapWS.size() * (instCount - lastFault)
+					aveSize = (double) ((aveSize * lastFault) +
+						(mapWS.size() * (instCount - lastFault)))/instCount
 					lastFault = instCount
 				}
 			mapWS[address] = instCount
@@ -102,7 +101,6 @@ class FifthPassHandler extends DefaultHandler {
 	 */
 	void endDocument()
 	{
-		aveSize = averages.sum()/instCount
 		println "Run for theta of $theta max size working set completed:"
 		println "Faults: $faults, g(): ${firstPassHandler.totalInstructions/faults}"
 		println "Ave. working set size $aveSize"
