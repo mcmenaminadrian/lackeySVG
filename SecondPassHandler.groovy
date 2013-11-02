@@ -295,10 +295,10 @@ class SecondPassHandler extends DefaultHandler {
 				def siz = Long.decode(attrs.getValue('size'))
 				instTrack += siz
 
-				if (instTrack > ((int)(instRange * travel)/40)){
+	/*		FIX ME	if (instTrack > ((int)(instRange * travel)/40)){
 					print ">"
 					travel++
-				}
+				} */  
 				if (inst) {
 					def address = Long.decode(
 							attrs.getValue('address')) >> pageSize
