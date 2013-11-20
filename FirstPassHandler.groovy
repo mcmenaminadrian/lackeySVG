@@ -10,12 +10,12 @@ import org.xml.sax.*
 class FirstPassHandler extends DefaultHandler {
 	//handle the events from first pass through the XML file
 	//called by SAX processor
-	def totalInstructions = 0
-	def minInstructionAddr = 0xFFFFFFFF
-	def maxInstructionAddr = 0
-	def minHeapAddr = 0xFFFFFFFF
-	def maxHeapAddr = 0
-	def maxSize = 0
+	long totalInstructions = 0
+	long minInstructionAddr = 0xFFFFFFFF
+	long maxInstructionAddr = 0
+	long minHeapAddr = 0xFFFFFFFF
+	long maxHeapAddr = 0
+	long maxSize = 0
 	def verb
 	def command
 	def pageMap = [:]
@@ -54,27 +54,25 @@ class FirstPassHandler extends DefaultHandler {
 			
 		switch (qName) {
 	
+			case 'threadml':
 			case 'lackeyml':
+			case 'application':
+			case 'thread':
 			break;
 				
-			case 'application':
-			command = attrs.getValue('command')
-			printout("Application is $command")
-			break
-				
 			case 'instruction':
-			def address
+			long address
 			def strAddr
 			def siz
 			def strSize
 			strAddr = attrs.getValue('address');
 			if (strAddr)
-				address = Long.decode(strAddr)
+				address = Long.parseLong(strAddr, 16)
 			else
 				break
 			strSize = attrs.getValue('size')
 			if (strSize)
-				siz = Long.decode(strSize)
+				siz = Long.parseLong(strSize, 16)
 			else
 				break
 			if (siz > maxSize)
@@ -97,12 +95,12 @@ class FirstPassHandler extends DefaultHandler {
 			def siz
 			def strAddr = attrs.getValue('address')
 			if (strAddr)
-				address = Long.decode(strAddr)
+				address = Long.parseLong(strAddr, 16)
 			else
 				break
 			strSize = attrs.getValue('size')
 			if (strSize)
-				siz = Long.decode(attrs.getValue('size'))
+				siz = Long.parseLong(strSize, 16)
 			else
 				break
 			if (siz > maxSize)

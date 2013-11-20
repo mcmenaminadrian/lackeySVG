@@ -20,20 +20,20 @@ class SecondPassHandler extends DefaultHandler {
 	def inst
 	def writer
 	def svg
-	Long xFact
-	Long yFact
-	Long max
-	Long min
-	Long instTrack
+	long xFact
+	long yFact
+	long max
+	long min
+	long instTrack
 	def percentile
 	def factor = 1
 	def instMap = [:]
 	def loadMap = [:]
 	def storeMap = [:]
 	def heapMap = [:]
-	def instRange
-	def range
-	def travel = 0
+	long instRange
+	long range
+	long travel = 0
 	def pageSize = 0
 	def boostSize //margins around the graph
 	def gridMarks = 4
@@ -192,13 +192,13 @@ class SecondPassHandler extends DefaultHandler {
 							fill:"none", stroke:"red", "stroke-width":1){}
 				}
 			}
-			storeMap.each { k, v ->
-				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
-						fill:"none", stroke:"yellow", "stroke-width":1){}
-			}
 			loadMap.each { k, v ->
 				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
 						fill:"none", stroke:"blue", "stroke-width":1){}
+			}
+			storeMap.each { k, v ->
+				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
+						fill:"none", stroke:"yellow", "stroke-width":1){}
 			}
 			heapMap.each { k, v ->
 				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
@@ -216,18 +216,18 @@ class SecondPassHandler extends DefaultHandler {
 					}
 				}
 			}
-			storeMap.each { k, v ->
-				if (k[1] in miny .. maxy) {
-					def replot = k[1] - miny + boostSize
-					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
-							fill:"none", stroke:"yellow", "stroke-width":1){}
-				}
-			}
 			loadMap.each { k, v ->
 				if (k[1] in miny .. maxy) {
 					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
 							fill:"none", stroke:"blue", "stroke-width":1){}
+				}
+			}
+			storeMap.each { k, v ->
+				if (k[1] in miny .. maxy) {
+					def replot = k[1] - miny + boostSize
+					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
+							fill:"none", stroke:"yellow", "stroke-width":1){}
 				}
 			}
 			heapMap.each { k, v ->
@@ -250,19 +250,12 @@ class SecondPassHandler extends DefaultHandler {
 		switch(qName) {
 
 			case 'lackeyml':
+			case 'threadml':
 				if (verb)
 					println "Beginning plot"
 				print "["
-				break
-
-			case 'application':
-				def command = attrs.getValue('command')
-				def yDraw = (int) boostSize - 10
-				svg.text(x:width, y: yDraw,
-						style:"font-family:Helvetica; font-size:10; fill: black",
-						"$command"){}
 				def yInt = (int) height/20
-				yDraw += yInt
+				def yDraw = yInt
 				def margin = width + boostSize + 10
 				if (inst) {
 					svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"red",
@@ -291,17 +284,27 @@ class SecondPassHandler extends DefaultHandler {
 						"Store")
 				break
 
+			case 'application':
+				def command = attrs.getValue('command')
+				def yDraw = (int) boostSize - 10
+				svg.text(x:width, y: yDraw,
+						style:"font-family:Helvetica; font-size:10; fill: black",
+						"$command"){}
+				break
+
+
 			case 'instruction':
-				def siz = Long.decode(attrs.getValue('size'))
+				def siz = Long.parseLong(attrs.getValue('size'), 16)
 				instTrack += siz
 
-	/*		FIX ME	if (instTrack > ((int)(instRange * travel)/40)){
+				if (instTrack > ((int)(instRange * travel)/40)){
 					print ">"
 					travel++
-				} */  
+				}
+				  
 				if (inst) {
-					def address = Long.decode(
-							attrs.getValue('address')) >> pageSize
+					def address = Long.parseLong(
+							attrs.getValue('address'), 16) >> pageSize
 					def xPoint = (int)(instTrack/xFact)
 					def yPoint = (int)(height * factor - (address - min)/yFact)
 					instMap[[xPoint, yPoint]] = true
@@ -309,7 +312,7 @@ class SecondPassHandler extends DefaultHandler {
 				break
 
 			case 'store':
-				def address = Long.decode(attrs.getValue('address')) >> pageSize
+				def address = Long.parseLong(attrs.getValue('address'), 16) >> pageSize
 				def xPoint = (int)(instTrack/xFact)
 				def yPoint = (int)(height * factor - (address - min)/yFact)
 				storeMap[[xPoint, yPoint]] = true
@@ -317,14 +320,14 @@ class SecondPassHandler extends DefaultHandler {
 				break
 
 			case 'load':
-				def address = Long.decode(attrs.getValue('address')) >> pageSize
+				def address = Long.parseLong(attrs.getValue('address'), 16) >> pageSize
 				def xPoint = (int)(instTrack/xFact)
 				def yPoint = (int)(height * factor - (address - min)/yFact)
 				loadMap[[xPoint, yPoint]] = true
 				break
 
 			case 'modify':
-				def address = Long.decode(attrs.getValue('address')) >> pageSize
+				def address = Long.parseLong(attrs.getValue('address'), 16) >> pageSize
 				def xPoint = (int)(instTrack/xFact)
 				def yPoint = (int)(height * factor - (address - min)/yFact)
 				heapMap[[xPoint, yPoint]] = true

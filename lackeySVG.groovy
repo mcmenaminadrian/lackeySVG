@@ -17,7 +17,7 @@ class LackeySVGraph {
 	def LRUPLOT = 0x08
 
 	/**
-	 * Build various graphs from a lackeyml file
+	 * Build various graphs from a threadml file
 	 * 
 	 * @param width width of the graph in pixels
 	 * @param height height of the graph in pixels
