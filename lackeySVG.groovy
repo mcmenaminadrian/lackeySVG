@@ -130,7 +130,7 @@ class LackeySVGraph {
 		if (PLOTS & LRUPLOT) {
 			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap())
 			thetaLRUAveMap = Collections.synchronizedSortedMap(new TreeMap())
-			def memTheta = (int) maxPg/width
+			int memTheta =  maxPg/width
 			if (memTheta == 0)
 				memTheta = 1
 			(memTheta .. maxPg).step(memTheta){
