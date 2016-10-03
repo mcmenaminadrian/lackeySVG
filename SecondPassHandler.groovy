@@ -20,8 +20,8 @@ class SecondPassHandler extends DefaultHandler {
 	def inst
 	def writer
 	def svg
-	Long xFact
-	Long yFact
+	def xFact
+	def yFact
 	Long max
 	Long min
 	Long instTrack
@@ -75,7 +75,7 @@ class SecondPassHandler extends DefaultHandler {
 		svg = new MarkupBuilder(writer)
 
 		min = fPH.minHeapAddr
-		max = fPH.maxHeapAddr;
+		max = fPH.maxHeapAddr
 		if (inst) {
 			if (fPH.minInstructionAddr < min)
 				min = fPH.minInstructionAddr
@@ -88,12 +88,12 @@ class SecondPassHandler extends DefaultHandler {
 		}
 		Long memRange = max - min
 		instRange = fPH.totalInstructions
-		yFact = (int)(memRange/height)
+		yFact = memRange/height
 		if (percentile) {
-			factor = 100/range
-			yFact = (int) yFact/factor
+			factor = 1000/range
+			yFact = yFact/factor
 		}
-		xFact = (int)(instRange/width)
+		xFact = instRange/width
 		instTrack = 0;
 	}
 
@@ -124,59 +124,59 @@ class SecondPassHandler extends DefaultHandler {
 				rangeStr = "From $min to $max"
 		}
 		svg.text(x:boostSize, y:cHeight,
-			style: "font-family: Helvetica; font-size: 10; fill: black",
-			rangeStr){}
+		style: "font-family: Helvetica; font-size: 10; fill: black",
+		rangeStr){}
 
 		if (verb) println "Drawing axes"
 		svg.line(x1:boostSize - 10, y1:5 + cHeight - boostSize,
-				x2:cWidth - boostSize + 5, y2:5 + cHeight - boostSize,
-				stroke:"black", "stroke-width":10){}
+		x2:cWidth - boostSize + 5, y2:5 + cHeight - boostSize,
+		stroke:"black", "stroke-width":10){}
 		svg.line(x1:boostSize - 5, y1:5 + cHeight - boostSize,
-				x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":10){}
+		x2:boostSize - 5, y2:boostSize, stroke:"black", "stroke-width":10){}
 
 		(0 .. gridMarks).each { i ->
 			svg.line(x1:(int)(boostSize + width * i/gridMarks),
-					y1:15 + cHeight - boostSize,
-					x2:(int)(boostSize + width * i/gridMarks),
-					y2: boostSize,
-					stroke:"lightgrey", "stroke-width":1){}
+			y1:15 + cHeight - boostSize,
+			x2:(int)(boostSize + width * i/gridMarks),
+			y2: boostSize,
+			stroke:"lightgrey", "stroke-width":1){}
 			svg.text(x:(int)(boostSize - 5 + width * i/gridMarks),
-					y:20 + cHeight - boostSize,
-					style: "font-family: Helvetica; font-size:10; fill: maroon",
-					((int) instRange * i / gridMarks))
+			y:20 + cHeight - boostSize,
+			style: "font-family: Helvetica; font-size:10; fill: maroon",
+			((int) instRange * i / gridMarks))
 			svg.line(x1:boostSize - 20,
-					y1:(int)(height * i/gridMarks + boostSize),
-					x2:cWidth - boostSize,
-					y2:(int)(height * i/gridMarks + boostSize),
-					stroke:"lightgrey", "stroke-width":1){}
+			y1:(int)(height * i/gridMarks + boostSize),
+			x2:cWidth - boostSize,
+			y2:(int)(height * i/gridMarks + boostSize),
+			stroke:"lightgrey", "stroke-width":1){}
 			Long memRange = max - min
 			if (percentile){
-				def nMin = min + memRange * ((percentile - 1) / 100)
-				def nMax = nMin + memRange * (range / 100)
+				def nMin = min + memRange * ((percentile - 1) / 1000)
+				def nMax = nMin + memRange * (range / 1000)
 				def nRange = nMax - nMin;
 				svg.text(x:boostSize - 70,
-						y: (int)(5 + height * i/gridMarks + boostSize),
-						style: "font-family: Helvetica; font-size:10; fill: maroon",
-						Long.toString((Long)(nMax - nRange * (i/gridMarks)), 16))
+				y: (int)(5 + height * i/gridMarks + boostSize),
+				style: "font-family: Helvetica; font-size:10; fill: maroon",
+				Long.toString((Long)(nMax - nRange * (i/gridMarks)), 16))
 			}
-			else 
+			else
 				svg.text(x:boostSize - 70,
-						y: (int)(5 + height * i/gridMarks + boostSize),
-						style: "font-family: Helvetica; font-size:10; fill: maroon",
-						Long.toString((Long)(max - memRange * (i/gridMarks)), 16))
+				y: (int)(5 + height * i/gridMarks + boostSize),
+				style: "font-family: Helvetica; font-size:10; fill: maroon",
+				Long.toString((Long)(max - memRange * (i/gridMarks)), 16))
 		}
 		def memString = "PAGES"
 		if (!pageSize)
 			memString = "MEMORY"
 		svg.text(x:boostSize/4, y: height / 2,
-				transform:"rotate(90, ${boostSize/4}, ${height/2})",
-				style: "font-family: Helvetica; font-size:10; fill:red",
-				memString)
+		transform:"rotate(90, ${boostSize/4}, ${height/2})",
+		style: "font-family: Helvetica; font-size:10; fill:red",
+		memString)
 
 		def instPerPixel = (int)instRange/width
 		svg.text(x:boostSize, y: height + boostSize * 1.5,
-				style: "font-family:Helvetica; font-size:10; fill:red",
-				"INSTRUCTIONS ($instPerPixel per pixel)")
+		style: "font-family:Helvetica; font-size:10; fill:red",
+		"INSTRUCTIONS ($instPerPixel per pixel)")
 	}
 
 	/**
@@ -189,30 +189,30 @@ class SecondPassHandler extends DefaultHandler {
 			if (inst) {
 				instMap.each{ k, v ->
 					svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
-							fill:"none", stroke:"red", "stroke-width":1){}
+					fill:"none", stroke:"red", "stroke-width":1){}
 				}
 			}
 			storeMap.each { k, v ->
 				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
-						fill:"none", stroke:"yellow", "stroke-width":1){}
+				fill:"none", stroke:"yellow", "stroke-width":1){}
 			}
 			loadMap.each { k, v ->
 				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
-						fill:"none", stroke:"blue", "stroke-width":1){}
+				fill:"none", stroke:"blue", "stroke-width":1){}
 			}
 			heapMap.each { k, v ->
 				svg.circle(cx:k[0] + boostSize, cy:k[1] + boostSize, r:1,
-						fill:"none", stroke:"green", "stroke-width":1){}
+				fill:"none", stroke:"green", "stroke-width":1){}
 			}
 		} else {
-			Long miny = height * factor * ((100 -(percentile + range - 1))/100)
+			Long miny = height * factor * ((1000 -(percentile + range - 1))/1000)
 			Long maxy = miny + height;
 			if (inst) {
 				instMap.each{ k, v ->
 					if (k[1] in miny .. maxy) {
 						def replot = k[1] - miny + boostSize
 						svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
-								fill:"none", stroke:"red", "stroke-width":1){}
+						fill:"none", stroke:"red", "stroke-width":1){}
 					}
 				}
 			}
@@ -220,21 +220,21 @@ class SecondPassHandler extends DefaultHandler {
 				if (k[1] in miny .. maxy) {
 					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
-							fill:"none", stroke:"yellow", "stroke-width":1){}
+					fill:"none", stroke:"yellow", "stroke-width":1){}
 				}
 			}
 			loadMap.each { k, v ->
 				if (k[1] in miny .. maxy) {
 					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
-							fill:"none", stroke:"blue", "stroke-width":1){}
+					fill:"none", stroke:"blue", "stroke-width":1){}
 				}
 			}
 			heapMap.each { k, v ->
 				if (k[1] in miny .. maxy) {
 					def replot = k[1] - miny + boostSize
 					svg.circle(cx:k[0] + boostSize, cy:replot, r:1,
-							fill:"none", stroke:"green", "stroke-width":1){}
+					fill:"none", stroke:"green", "stroke-width":1){}
 				}
 			}
 		}
@@ -246,7 +246,7 @@ class SecondPassHandler extends DefaultHandler {
 	 * SAX startElement - calculate pages accessed
 	 */
 	void startElement(String ns, String localName, String qName,
-	Attributes attrs) {
+			Attributes attrs) {
 		switch(qName) {
 
 			case 'lackeyml':
@@ -259,74 +259,81 @@ class SecondPassHandler extends DefaultHandler {
 				def command = attrs.getValue('command')
 				def yDraw = (int) boostSize - 10
 				svg.text(x:width, y: yDraw,
-						style:"font-family:Helvetica; font-size:10; fill: black",
-						"$command"){}
+				style:"font-family:Helvetica; font-size:10; fill: black",
+				"$command"){}
 				def yInt = (int) height/20
 				yDraw += yInt
 				def margin = width + boostSize + 10
 				if (inst) {
 					svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"red",
-							stroke:"black", "stroke-width":1)
+					stroke:"black", "stroke-width":1)
 					svg.text(x:margin + 10, y:yDraw + 5,
-							style:"font-family:Helvetica; font-size:10; fill:black",
-							"Instructions")
+					style:"font-family:Helvetica; font-size:10; fill:black",
+					"Instructions")
 				}
 				yDraw += yInt
 				svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"green",
-						stroke:"black", "stroke-width":1)
+				stroke:"black", "stroke-width":1)
 				svg.text(x:margin + 10, y:yDraw + 5,
-						style:"font-family:Helvetica; font-size:10; fill:black",
-						"Modify")
+				style:"font-family:Helvetica; font-size:10; fill:black",
+				"Modify")
 				yDraw += yInt
 				svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"blue",
-						stroke:"black", "stroke-width":1)
+				stroke:"black", "stroke-width":1)
 				svg.text(x:margin + 10, y:yDraw + 5,
-						style:"font-family:Helvetica; font-size:10; fill:black",
-						"Load")
+				style:"font-family:Helvetica; font-size:10; fill:black",
+				"Load")
 				yDraw += yInt
 				svg.rect(x:margin, y: yDraw, width:5, height:5, fill:"yellow",
-						stroke:"black", "stroke-width":1)
+				stroke:"black", "stroke-width":1)
 				svg.text(x:margin + 10, y:yDraw + 5,
-						style:"font-family:Helvetica; font-size:10; fill:black",
-						"Store")
+				style:"font-family:Helvetica; font-size:10; fill:black",
+				"Store")
 				break
 
 			case 'instruction':
 				def siz = Long.decode(attrs.getValue('size'))
 				instTrack += siz
 
-	/*		FIX ME	if (instTrack > ((int)(instRange * travel)/40)){
+				if (instTrack > ((int)(instRange * travel)/40)){
 					print ">"
 					travel++
-				} */  
+				}
 				if (inst) {
-					def address = Long.decode(
-							attrs.getValue('address')) >> pageSize
-					def xPoint = (int)(instTrack/xFact)
-					def yPoint = (int)(height * factor - (address - min)/yFact)
+					def hexStr = (attrs.getValue('address')).stripIndent(2)
+					def address = (
+							new BigInteger(hexStr, 16)).shiftRight(pageSize)
+					int xPoint = instTrack/xFact
+					int yPoint = height * factor - (address - min)/yFact
 					instMap[[xPoint, yPoint]] = true
 				}
 				break
 
 			case 'store':
-				def address = Long.decode(attrs.getValue('address')) >> pageSize
-				def xPoint = (int)(instTrack/xFact)
-				def yPoint = (int)(height * factor - (address - min)/yFact)
+				def hexStr = (attrs.getValue('address')).stripIndent(2)
+				def address = (
+						new BigInteger(hexStr, 16)).shiftRight(pageSize)
+				int xPoint = instTrack/xFact
+				int yPoint = height * factor - (address - min)/yFact
 				storeMap[[xPoint, yPoint]] = true
 				if (yPoint > biggest) biggest = yPoint
 				break
 
 			case 'load':
-				def address = Long.decode(attrs.getValue('address')) >> pageSize
-				def xPoint = (int)(instTrack/xFact)
-				def yPoint = (int)(height * factor - (address - min)/yFact)
+				def hexStr = (attrs.getValue('address')).stripIndent(2)
+				def address = (
+						new BigInteger(hexStr, 16)).shiftRight(pageSize)
+				int xPoint = instTrack/xFact
+				int yPoint = height * factor - (address - min)/yFact
 				loadMap[[xPoint, yPoint]] = true
 				break
 
 			case 'modify':
-				def address = Long.decode(attrs.getValue('address')) >> pageSize
-				def xPoint = (int)(instTrack/xFact)
-				def yPoint = (int)(height * factor - (address - min)/yFact)
+				def hexStr = (attrs.getValue('address')).stripIndent(2)
+				def address = (
+						new BigInteger(hexStr, 16)).shiftRight(pageSize)
+				int xPoint = instTrack/xFact
+				int yPoint = height * factor - (address - min)/yFact
 				heapMap[[xPoint, yPoint]] = true
 				break
 		}

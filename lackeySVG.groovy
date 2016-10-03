@@ -179,8 +179,8 @@ svgCli.h(longOpt:'height', args: 1,
 svgCli.i(longOpt: 'instructions', 'graph instructions - default false')
 svgCli.u(longOpt: 'usage', 'prints this information')
 svgCli.v(longOpt: 'verbose', 'prints verbose information - default false')
-svgCli.p(longOpt: 'percentile', args:1, 'lowest percentile to graph')
-svgCli.r(longOpt: 'range', args:1, '(percentile) default is 10')
+svgCli.p(longOpt: 'thousandth', args:1, 'lowest thousandth to graph')
+svgCli.r(longOpt: 'range', args:1, '(thosandths) default is 10')
 svgCli.g(longOpt: 'pageshift', args:1, 'page size in power of 2 - 4KB = 12')
 svgCli.m(longOpt: 'gridmarks', args: 1, 'grid marks on graph - default 4')
 svgCli.s(longOpt: 'workingset', args: 1, 'instructions per working set')
@@ -230,11 +230,11 @@ else {
 	}
 	if (oAss.p) {
 		def tPer = Integer.parseInt(oAss.p)
-		if (tPer > 0 && tPer <= 100)
+		if (tPer > 0 && tPer <= 1000)
 			percentile = tPer
 		if (oAss.r) {
 			def tRange = Integer.parseInt(oAss.r)
-			if (tRange >= 1 && tRange <= (101 - percentile))
+			if (tRange >= 1 && tRange <= (1001 - percentile))
 				range = tRange
 		}
 	}
