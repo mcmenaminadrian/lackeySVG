@@ -32,6 +32,7 @@ class SecondPassHandler extends DefaultHandler {
 	def storeMap = [:]
 	def heapMap = [:]
 	def instRange
+	def instCount = 0
 	def range
 	def travel = 0
 	def pageSize = 0
@@ -88,6 +89,7 @@ class SecondPassHandler extends DefaultHandler {
 		}
 		Long memRange = max - min
 		instRange = fPH.totalInstructions
+		travel = instRange / 40
 		yFact = memRange/height
 		if (percentile) {
 			factor = 1000/range
@@ -294,10 +296,11 @@ class SecondPassHandler extends DefaultHandler {
 			case 'instruction':
 				def siz = Long.decode(attrs.getValue('size'))
 				instTrack += siz
+				instCount += siz
 
-				if (instTrack > ((int)(instRange * travel)/40)){
+				if (instCount > travel){
 					print ">"
-					travel++
+					instCount = 0
 				}
 				if (inst) {
 					def hexStr = (attrs.getValue('address')).stripIndent(2)
