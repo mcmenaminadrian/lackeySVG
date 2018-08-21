@@ -79,7 +79,7 @@ class LackeySVGraph {
 
 		def wsClosure = {
 			def handler3 = new ThirdPassHandler(verb, handler, workingSetInst,
-					width, height, gridMarks, boost)
+					width, height, gridMarks, boost, pageSize)
 			def saxReader = SAXParserFactory.newInstance().
 					newSAXParser().XMLReader
 			saxReader.setContentHandler(handler3)

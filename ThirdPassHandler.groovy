@@ -41,9 +41,10 @@ class ThirdPassHandler extends DefaultHandler {
 	 * @param height height of graph in pixels
 	 * @param gridMarks grid lines to be drawn
 	 * @param boost width of margins in pixels
+	 * @param pShift page shift in powers of 2
 	 */
 	ThirdPassHandler(def verb, def fPHandler, def wSetInst,
-		def width, def height, def gridMarks, def boost)
+		def width, def height, def gridMarks, def boost, def pShift)
 	{
 		super()
 		this.verb = verb
@@ -53,6 +54,7 @@ class ThirdPassHandler extends DefaultHandler {
 		this.height = height
 		this.gridMarks = gridMarks
 		boostSize = boost
+		this.pageShift = pShift
 		
 		//adjust instruct set size if needed
 		range = fPHandler.totalInstructions
