@@ -18,7 +18,7 @@ class GraphCompFifo {
 	 * @param gridMarks number of grid lines
 	 * @param boostSize size of margin in pixels
 	 */
-	GraphCompTheta(def thetaFIFOAveMap, def thetaLRUAveMap, 
+	GraphCompFifo(def thetaFIFOAveMap, def thetaLRUAveMap, 
 		def width, def height, def gridMarks, def boostSize)
 	{
 		println "Drawing lifetime function"
