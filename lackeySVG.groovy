@@ -191,7 +191,7 @@ class LackeySVGraph {
 					saxFIFOReader.setContentHandler(
 						hanlder6)
 					saxFIFOReader.parse(
-						new InsputSource(new
+						new InputSource(new
 						FileInputStream(fPath)))
 					def g = (int)(handler.totalInstructions /
 						handler6.faults)
