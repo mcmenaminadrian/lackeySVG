@@ -18,7 +18,7 @@ class GraphFIFOTheta {
 	GraphFIFOTheta(def thetaFIFOMap, def width, def height, def gridMarks,
 		def boostSize)
 	{
-		println "Drawing WS lifetime function"
+		println "Drawing FIFO lifetime function"
 		def thetas = thetaFIFOMap.keySet()
 		def gs = thetaFIFOMap.values()
 		def maxG = gs.max()

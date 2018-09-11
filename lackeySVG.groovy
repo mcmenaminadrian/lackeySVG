@@ -128,6 +128,47 @@ class LackeySVGraph {
 		pool.awaitTermination 5, TimeUnit.DAYS
 
 
+
+		def pool3 = Executors.newFixedThreadPool(threads)
+
+		if (PLOTS & FIFOPLOT) {
+			thetaFIFOMap = Collections.synchronizedSortedMap(
+				new TreeMap())
+			thetaFIFOAveMap = Collections.synchronizedSortedMap(
+				new TreeMap())
+			int memTheta = maxPg / width
+			if (memTheta == 0)
+				memTheta = 1
+			(memTheta .. maxPg).step(memTheta) {
+				def mem = it
+				Closure passFIFO = {
+					if (verb) {
+						println 
+						"Setting FIFO theta to $mem"
+					}
+					def handler6 = new
+						SixthPassHandler(handler, mem,
+							pageSize)
+					def saxFIFOReader = SAXParserFactory.
+						newInstance().newSAXParser().
+						XMLReader
+					saxFIFOReader.setContentHandler(
+						handler6)
+					saxFIFOReader.parse(
+						new InputSource(new
+						FileInputStream(fPath)))
+					def g = (int) (handler.totalInstructions / handler6.faults)
+					thetaFIFOMap[mem] = g
+					thetaFIFOAveMap[handler6.aveSize] = g
+				}
+				pool3.submit(passFIFO as Callable)
+			}
+		}
+		pool3.shutdown()
+		pool3.awaitTermination 5, TimeUnit.DAYS
+
+
+
 		def pool2 = Executors.newFixedThreadPool(threads)
 
 		if (PLOTS & LRUPLOT) {
@@ -135,14 +176,15 @@ class LackeySVGraph {
 				new TreeMap())
 			thetaLRUAveMap = Collections.synchronizedSortedMap(
 				new TreeMap())
-			int memTheta =  maxPg/width
+			int memTheta = maxPg / width
 			if (memTheta == 0)
 				memTheta = 1
 			(memTheta .. maxPg).step(memTheta){
 				def mem = it
 				Closure passLRU = {
 					if (verb) {
-						println "Setting LRU theta to $mem"
+						println 
+						"Setting LRU theta to $mem"
 					}
 					def handler5 = new FifthPassHandler(handler, mem,
 						pageSize)
@@ -164,45 +206,6 @@ class LackeySVGraph {
 		pool2.shutdown()
 		pool2.awaitTermination 5, TimeUnit.DAYS
 
-		def pool3 = Executors.newFixedThreadPool(threads)
-
-		if (PLOTS & FIFOPLOT) {
-			thetaFIFOMap = Collections.synchronizedSortedMap(
-				new TreeMap())
-			thetaFIFOAveMap = Collections.synchronizedSortedMap(
-				new TreeMap())
-			int memTheta = maxPg / width
-			if (memTheta == 0) {
-				memTheta = 1
-			}
-			(memTheta .. maxPg).step(memTheta) {
-				def mem = it
-				Closure passFIFO = {
-					if (verb) {
-						println 
-						"Setting FIFO Theta to $mem"
-					}
-					def handler6 = new
-						SixthPassHandler(handler, mem,
-							pageSize)
-					def saxFIFOReader = SAXParserFactory.
-						newInstance().newSAXParser().
-						XMLReader
-					saxFIFOReader.setContentHandler(
-						hanlder6)
-					saxFIFOReader.parse(
-						new InputSource(new
-						FileInputStream(fPath)))
-					def g = (int)(handler.totalInstructions /
-						handler6.faults)
-					thetaFIFOMap[mem] =g
-					thetaFIFOAveMap[handler6.aveSize] = g
-				}
-				pool3.submit(passFIFO as Callable)
-			}
-		}
-		pool3.shutdown()
-		pool3.awaitTerminiation 5, TimeUnit.DAYS			
 
 		if (PLOTS & LIFEPLOT)
 			def graphTheta = new GraphTheta(thetaMap, width, height,

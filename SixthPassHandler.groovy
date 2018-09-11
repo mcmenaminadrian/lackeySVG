@@ -74,7 +74,7 @@ class SixthPassHandler extends DefaultHandler {
 						(mapWS.size() * (instCount - 
 						lastFault)))/instCount
 				lastFault = instCount
-				mapWS[address] = isntCount
+				mapWS[address] = instCount
 				if (mapWS.size() > theta)
 					cleanWS()
 			}
