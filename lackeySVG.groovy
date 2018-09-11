@@ -15,6 +15,7 @@ class LackeySVGraph {
 	def WSPLOT = 0x02
 	def LIFEPLOT = 0x04
 	def LRUPLOT = 0x08
+	def FIFOPLOT = 0x10
 
 	/**
 	 * Build various graphs from a lackeyml file
@@ -40,8 +41,10 @@ class LackeySVGraph {
 	def workingSetInst, def threads, def boost, def PLOTS) {
 		def thetaLRUMap
 		def thetaMap
+		def thetaFIFOMap
 		def thetaAveMap
 		def thetaLRUAveMap
+		def thetaFIFOAveMap
 		println "Opening $fPath"
 		def handler = new FirstPassHandler(verb, pageSize)
 		def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
@@ -104,7 +107,7 @@ class LackeySVGraph {
 					if (verb)
 						println "Setting theta to $steps"
 					def handler4 = new FourthPassHandler(handler, steps,
-							12)
+							pageSize)
 					def saxReader =
 							SAXParserFactory.newInstance().
 								newSAXParser().XMLReader
@@ -128,23 +131,27 @@ class LackeySVGraph {
 		def pool2 = Executors.newFixedThreadPool(threads)
 
 		if (PLOTS & LRUPLOT) {
-			thetaLRUMap = Collections.synchronizedSortedMap(new TreeMap())
-			thetaLRUAveMap = Collections.synchronizedSortedMap(new TreeMap())
+			thetaLRUMap = Collections.synchronizedSortedMap(
+				new TreeMap())
+			thetaLRUAveMap = Collections.synchronizedSortedMap(
+				new TreeMap())
 			int memTheta =  maxPg/width
 			if (memTheta == 0)
 				memTheta = 1
 			(memTheta .. maxPg).step(memTheta){
 				def mem = it
 				Closure passLRU = {
-					if (verb)
+					if (verb) {
 						println "Setting LRU theta to $mem"
+					}
 					def handler5 = new FifthPassHandler(handler, mem,
-							12)
+						pageSize)
 					def saxLRUReader = SAXParserFactory.newInstance().
-							newSAXParser().XMLReader
+						newSAXParser().XMLReader
 					saxLRUReader.setContentHandler(handler5)
 					saxLRUReader.parse(
-							new InputSource(new FileInputStream(fPath)))
+						new InputSource(new
+						FileInputStream(fPath)))
 					def g = (int)(handler.totalInstructions /
 							handler5.faults)
 					thetaLRUMap[mem] = g
@@ -157,14 +164,60 @@ class LackeySVGraph {
 		pool2.shutdown()
 		pool2.awaitTermination 5, TimeUnit.DAYS
 
+		def pool3 = EXecutors.newFixedThreadPoll(threads)
+
+		if (PLOTS & FIFOPLOT) {
+			thetaFIFOMap = Collections.synchonizedSortedMap(
+				new TreeMap())
+			thetaFIFOAveMap = Collections.synchronizedSortedmap(
+				new TreeMap())
+			int memTheta = maxPg / width
+			if (memTheta == 0) {
+				memTheta = 1
+			}
+			(memTheta .. maxPg).step(memTheta) {
+				def mem = it
+				Closure passFIFO = {
+					if (verb) {
+						println 
+						"Setting FIFO Theta to $mem"
+					}
+					def handler6 = new
+						SixthPassHandler(handler, mem,
+							pageSize)
+					def saxFIFOReader = SAXParserFactory.
+						newInstance().newSAXParser().
+						XMLReader
+					saxFIFOReader.setContentHandler(
+						hanlder6)
+					saxFIFOReader.parse(
+						new InsputSource(new
+						FileInputStream(fPath)))
+					def g = (int)(handler.totalInstructions /
+						handler6.faults)
+					thetaFIFOMap[mem] =g
+					thetaFIFOAveMap[handler6.aveSize] = g
+				}
+				pool3.submit(passFIFO as Callable)
+			}
+		}
+		pool3.shutdown()
+		pool3.awaitTerminiation 5, TimeUnit.DAYS			
+
 		if (PLOTS & LIFEPLOT)
 			def graphTheta = new GraphTheta(thetaMap, width, height,
 					gridMarks, boost)
 		if (PLOTS & LRUPLOT)
 			def graphLRUTheta = new GraphLRUTheta(thetaLRUMap, width, height,
 					gridMarks, boost)
+		if (PLOTS & FIFOPLOT)
+			def graphFIFOTheta = new GraphFIFOTheta(thetaFIFOMap, width, height,
+					gridMarks, boost)
 		if ((PLOTS & LRUPLOT) && (PLOTS & LIFEPLOT))
 			def graphCompTheta = new GraphCompTheta(thetaAveMap, 
+				thetaLRUAveMap, width, height, gridMarks, boost)
+		if ((PLOTS & FIFOPLOT) && (PLOTS & LRUPLOT))
+			def graphCompFifo = new GraphCompFifo(thetaFIFOAveMap,
 				thetaLRUAveMap, width, height, gridMarks, boost)
 	}
 }
@@ -184,12 +237,13 @@ svgCli.r(longOpt: 'range', args:1, '(thosandths) default is 10')
 svgCli.g(longOpt: 'pageshift', args:1, 'page size in power of 2 - 4KB = 12')
 svgCli.m(longOpt: 'gridmarks', args: 1, 'grid marks on graph - default 4')
 svgCli.s(longOpt: 'workingset', args: 1, 'instructions per working set')
-svgCli.t(longOpt: 'threadpool', args: 1, 'size of thread pool (default 3)')
+svgCli.t(longOpt: 'threadpool', args: 1, 'size of thread pool (default 5)')
 svgCli.b(longOpt: 'margins', args: 1, 'margin size on graphs (default 100px)')
 svgCli.xm(longOpt: 'nomemplot', 'do not plot memory use')
 svgCli.xw(longOpt: 'nowsplot', 'do not plot working set')
 svgCli.xl(longOpt: 'nolifeplot', 'do not plot ws life time curve')
 svgCli.xr(longOpt: 'nolruplot', 'do not plot lru life time curve')
+svgCli.xf(longOpt: 'nofifoplot', 'do not plot fifo life time curve')
 
 def oAss = svgCli.parse(args)
 if (oAss.u || args.size() == 0) {
@@ -208,7 +262,7 @@ else {
 	def gridMarks = 4
 	def wSSize = 100000
 	def oFile = "${new Date().time.toString()}.svg"
-	def threads = 3
+	def threads = 5
 	def boost = 100
 	if (oAss.w)
 		width = Integer.parseInt(oAss.w)
@@ -253,6 +307,8 @@ else {
 		PLOTS = PLOTS ^ 0x04
 	if (oAss.xr)
 		PLOTS = PLOTS ^ 0x08
+	if (oAss.xf)
+		PLOTS = PLOTS ^ 0x10
 
 	def lSVG = new LackeySVGraph(width, height, inst, args[args.size() - 1],
 			verb, oFile, percentile, range, pageSize, gridMarks, wSSize,
