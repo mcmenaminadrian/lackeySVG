@@ -38,7 +38,7 @@ class SixthPassHandler extends DefaultHandler {
 		if (pageShift < 1 || pageShift > 64)
 			pageShift = 12 //4k is the default
 		totalInstructions = firstPassHandler.totalInstructions
-		mapWS = new LinkedHashMap(512, 0.7, true)
+		mapWS = new LinkedHashMap(512, 0.7, false)
 	}
 	
 	/**
@@ -47,11 +47,7 @@ class SixthPassHandler extends DefaultHandler {
 	void cleanWS()
 	{
 		//simply chop the oldest page
-		Iterator it = mapWS.entrySet().iterator()
-		if (it.hasNext()) {
-			it.next()
-			it.remove()
-		}
+		mapWS.remove(mapWS.min{it.value}.key)
 	}
 	
 	/**

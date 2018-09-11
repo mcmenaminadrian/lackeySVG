@@ -109,7 +109,7 @@ class GraphCompFifo {
 			transform:"rotate(270, ${boostSize/4}, ${height/2})",
 			style: "font-family: Helvetica; font-size:10; fill:red",
 			"Denning's g(theta)")
-		def strInst = "Average set size: red ws, blue lru"
+		def strInst = "Average set size: red fifo, blue lru"
 		svg.text(x:boostSize, y: height + boostSize * 1.5,
 				style: "font-family:Helvetica; font-size:10; fill:red",
 				strInst)
