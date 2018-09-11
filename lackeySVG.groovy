@@ -164,12 +164,12 @@ class LackeySVGraph {
 		pool2.shutdown()
 		pool2.awaitTermination 5, TimeUnit.DAYS
 
-		def pool3 = EXecutors.newFixedThreadPoll(threads)
+		def pool3 = Executors.newFixedThreadPool(threads)
 
 		if (PLOTS & FIFOPLOT) {
-			thetaFIFOMap = Collections.synchonizedSortedMap(
+			thetaFIFOMap = Collections.synchronizedSortedMap(
 				new TreeMap())
-			thetaFIFOAveMap = Collections.synchronizedSortedmap(
+			thetaFIFOAveMap = Collections.synchronizedSortedMap(
 				new TreeMap())
 			int memTheta = maxPg / width
 			if (memTheta == 0) {
